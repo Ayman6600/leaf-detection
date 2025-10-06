@@ -1,0 +1,14 @@
+{
+  "indices": [
+    "Powdery_mildew",
+    "Leaf_Spot",
+    "Aphids",
+    "Healthy"
+  ],
+  "display": [
+    "Powdery mildew",
+    "Leaf spot",
+    "Aphids (Aphis sp.)",
+    "Healthy"
+  ]
+}

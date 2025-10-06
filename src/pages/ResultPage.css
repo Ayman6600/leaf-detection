@@ -1,0 +1,59 @@
+:root {
+  --primary-green: #2e7d32;
+  --secondary-green: #4caf50;
+  --light-green: #e8f5e9;
+  --accent-green: #c8e6c9;
+  --dark-green: #1b5e20;
+  --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+body {
+  background-color: #f8f9fa;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  height: 100vh;
+}
+
+.card {
+  border: 0;
+  box-shadow: var(--card-shadow);
+  background: white;
+}
+
+.preview-wrapper img {
+  max-height: 300px;
+}
+
+.progress {
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+}
+
+.progress-bar {
+  background: linear-gradient(
+    90deg,
+    var(--primary-green),
+    var(--secondary-green)
+  );
+  border-radius: 999px;
+}
+
+.bg-gradient {
+  background: linear-gradient(135deg, #f8f9fa 0%, var(--light-green) 100%);
+  min-height: 100vh;
+  padding: 20px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bg-gradient {
+    padding: 15px 0;
+  }
+
+  .card {
+    margin: 10px;
+  }
+}
