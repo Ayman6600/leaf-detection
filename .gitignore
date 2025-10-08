@@ -1,5 +1,9 @@
 #env
 .env/
+Lib/
+bin/
+.DS_Store/
+pyvenv.cfg
 
 #requirements
 requirements.txt
