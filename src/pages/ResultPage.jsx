@@ -7,6 +7,74 @@ const ResultPage = ({ setCurrentPage }) => {
   const [resultData, setResultData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Function to determine cure information based on detection results
+  const getCureInfo = (results) => {
+    // Find the disease with the highest probability
+    let maxDisease = "";
+    let maxProbability = 0;
+
+    Object.entries(results).forEach(([disease, probability]) => {
+      if (probability > maxProbability) {
+        maxProbability = probability;
+        maxDisease = disease;
+      }
+    });
+
+    // Provide cure information based on the detected disease
+    switch (maxDisease) {
+      case "Healthy":
+        // For healthy leaves, provide general care tips
+        return {
+          disease: "Healthy Plant",
+          percentage: maxProbability,
+          cure: "Your Gymnema sylvestre plant is healthy! Continue with proper care:\n\n• Water when the top inch of soil feels dry\n• Provide bright, indirect sunlight\n• Maintain temperatures between 65-80°F\n• Ensure good air circulation\n• Fertilize monthly during growing season\n• Regularly inspect for pests and diseases",
+        };
+
+      case "Powdery mildew":
+        return {
+          disease: "Powdery Mildew",
+          percentage: maxProbability,
+          cure:
+            maxProbability <= 30
+              ? "Early Stage Treatment:\n• Remove affected leaves immediately\n• Improve air circulation around plants\n• Avoid overhead watering\n• Apply milk spray (1:10 ratio) weekly as preventive measure"
+              : maxProbability <= 60
+              ? "Moderate Stage Treatment:\n• Remove and dispose of infected plant material\n• Apply potassium bicarbonate solution (1 tbsp + ½ tsp liquid soap per gallon of water)\n• Spray thoroughly on both sides of leaves every 7-10 days\n• Space plants adequately for better air circulation"
+              : "Severe Stage Treatment:\n• Remove heavily infected leaves and dispose in sealed bags\n• Apply sulfur-based fungicide according to manufacturer instructions\n• Treat surrounding plants as preventive measure\n• Improve growing conditions (airflow, spacing, watering practices)",
+        };
+
+      case "Leaf spot":
+        return {
+          disease: "Leaf Spot",
+          percentage: maxProbability,
+          cure:
+            maxProbability <= 30
+              ? "Early Stage Treatment:\n• Remove spotted leaves immediately\n• Avoid overhead watering\n• Improve air circulation\n• Apply neem oil spray (2ml per liter of water) as preventive measure"
+              : maxProbability <= 60
+              ? "Moderate Stage Treatment:\n• Remove and destroy infected leaves\n• Apply copper-based fungicide (follow label instructions)\n• Water at soil level, not on foliage\n• Increase spacing between plants for better airflow"
+              : "Severe Stage Treatment:\n• Remove all severely affected leaves\n• Apply copper fungicide every 7-14 days\n• Consider crop rotation for next planting\n• Improve drainage and reduce humidity around plants",
+        };
+
+      case "Aphids (Aphis sp.)":
+        return {
+          disease: "Aphids Infestation",
+          percentage: maxProbability,
+          cure:
+            maxProbability <= 30
+              ? "Early Stage Treatment:\n• Spray plants with strong water jet to dislodge aphids\n• Introduce beneficial insects like ladybugs\n• Apply neem oil spray (2ml per liter of water) in the evening"
+              : maxProbability <= 60
+              ? "Moderate Stage Treatment:\n• Apply insecticidal soap (2 tsp per liter of water)\n• Spray thoroughly, covering undersides of leaves\n• Check for ants and control them (they protect aphids)\n• Repeat treatment every 3-4 days until controlled"
+              : "Severe Stage Treatment:\n• Use neem oil or pyrethrin-based insecticide\n• Apply systemic insecticide if infestation persists\n• Remove heavily infested plant parts\n• Monitor and reapply treatment as needed",
+        };
+
+      default:
+        return {
+          disease: "Unknown Condition",
+          percentage: maxProbability,
+          cure: "Unable to determine specific treatment. Consult with a plant specialist for proper diagnosis and care recommendations.",
+        };
+    }
+  };
+
   // Function to download the report as PDF
   const downloadReport = () => {
     if (!resultData) return;
@@ -47,6 +115,30 @@ const ResultPage = ({ setCurrentPage }) => {
       doc.text(`${disease}: ${probability}%`, 30, yPosition);
       yPosition += 10;
     });
+
+    // Add cure information
+    if (cureInfo) {
+      yPosition += 15;
+      doc.setFontSize(14);
+      doc.setTextColor(40, 167, 69);
+      doc.text("Recommended Treatment:", 20, yPosition);
+
+      yPosition += 10;
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Condition: ${cureInfo.disease}`, 20, yPosition);
+
+      yPosition += 10;
+      doc.text(`Confidence: ${cureInfo.percentage}%`, 20, yPosition);
+
+      yPosition += 10;
+      doc.text("Treatment Plan:", 20, yPosition);
+      const lines = doc.splitTextToSize(cureInfo.cure, 170);
+      for (let i = 0; i < lines.length; i++) {
+        yPosition += 10;
+        doc.text(lines[i], 30, yPosition);
+      }
+    }
 
     // Add separator line
     yPosition += 10;
@@ -165,6 +257,9 @@ const ResultPage = ({ setCurrentPage }) => {
     );
   }
 
+  // Get cure information for display
+  const cureInfo = resultData ? getCureInfo(resultData.results) : null;
+
   return (
     <motion.div
       className="bg-gradient min-vh-100 py-5"
@@ -280,6 +375,27 @@ const ResultPage = ({ setCurrentPage }) => {
                   )
                 )}
 
+                {/* Cure Information Section */}
+                {cureInfo && (
+                  <motion.div
+                    className="mt-4 p-3 bg-info rounded-3 text-white"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.2 }}
+                  >
+                    <h5 className="fw-bold mb-2">🌿 Recommended Treatment</h5>
+                    <p className="mb-1">
+                      <strong>Condition:</strong> {cureInfo.disease}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Confidence:</strong> {cureInfo.percentage}%
+                    </p>
+                    <p className="mb-0">
+                      <strong>Treatment Plan:</strong> {cureInfo.cure}
+                    </p>
+                  </motion.div>
+                )}
+
                 <div className="d-grid gap-2 mt-4">
                   <motion.button
                     className="btn btn-success rounded-pill"
@@ -295,7 +411,7 @@ const ResultPage = ({ setCurrentPage }) => {
                     className="btn btn-outline-success rounded-pill"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={downloadReport} // Add onClick handler
+                    onClick={downloadReport}
                   >
                     <i className="bi bi-download me-2"></i>
                     Download Report
