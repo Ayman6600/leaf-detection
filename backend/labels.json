@@ -1,0 +1,34 @@
+{
+  "indices": [
+    "Powdery_mildew",
+    "Leaf_Spot",
+    "Aphids",
+    "Healthy"
+  ],
+  "index_to_label": {
+    "0": "Powdery_mildew",
+    "1": "Leaf_Spot",
+    "2": "Aphids",
+    "3": "Healthy"
+  },
+  "display": [
+    "Powdery mildew",
+    "Leaf spot",
+    "Aphids (Aphis sp.)",
+    "Healthy"
+  ],
+  "display_map": {
+    "Powdery_mildew": "Powdery mildew",
+    "Leaf_Spot": "Leaf spot",
+    "Aphids": "Aphids (Aphis sp.)",
+    "Healthy": "Healthy"
+  },
+  "metadata": {
+    "model_type": "MobileNetV2",
+    "image_size": 224,
+    "batch_size": 16,
+    "training_epochs": 4,
+    "final_accuracy": 0.7777777910232544,
+    "final_loss": 2.2257587909698486
+  }
+}
