@@ -14,7 +14,6 @@ const SupportPage = lazy(() => import("./pages/SupportPage"));
 const FAQPage = lazy(() => import("./pages/FAQPage"));
 const ResultPage = lazy(() => import("./pages/ResultPage"));
 const HistoryPage = lazy(() => import("./pages/HistoryPage"));
-const AssistantPage = lazy(() => import("./pages/AssistantPage"));
 
 const LoadingFallback = () => (
   <div className="flex items-center justify-center h-screen">
@@ -41,7 +40,6 @@ function App() {
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/result" element={<ResultPage />} />
                 <Route path="/history" element={<HistoryPage />} />
-                <Route path="/assistant" element={<AssistantPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

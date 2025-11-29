@@ -253,6 +253,10 @@ const HomePage = () => {
                           size="lg"
                           className="rounded-lg"
                           aria-label="Choose image file to upload"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            document.getElementById('file-upload')?.click();
+                          }}
                         >
                           <Upload className="mr-2 h-4 w-4" />
                           Choose File

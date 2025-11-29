@@ -28,14 +28,19 @@ export const uploadImage = async (file) => {
   }
 };
 
-export const askAgricultureAssistant = async (question) => {
+export const askAgricultureAssistant = async (question, context = null) => {
   try {
+    const requestBody = { question };
+    if (context) {
+      requestBody.context = context;
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/assistant`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

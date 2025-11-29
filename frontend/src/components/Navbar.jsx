@@ -11,8 +11,7 @@ import {
   MessageSquare,
   Menu,
   X,
-  History,
-  Bot
+  History
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -22,7 +21,6 @@ const navigation = [
   { name: "Products", href: "/products", icon: Package },
   { name: "Dosage", href: "/dosage", icon: Pill },
   { name: "History", href: "/history", icon: History },
-  { name: "Assistant", href: "/assistant", icon: Bot },
   { name: "Support", href: "/support", icon: MessageSquare },
   { name: "FAQ", href: "/faq", icon: HelpCircle },
 ];

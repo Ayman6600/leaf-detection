@@ -5,17 +5,47 @@ import json
 import uuid
 import threading
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 from flask import Flask, request, jsonify, send_from_directory, current_app
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, will use system environment variables
+
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image as keras_image
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+
+# TensorFlow imports - handle gracefully if not available
+try:
+    import tensorflow as tf
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras.preprocessing import image as keras_image
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+    TENSORFLOW_AVAILABLE = True
+except (ImportError, Exception) as e:
+    TENSORFLOW_AVAILABLE = False
+    print(f"⚠️ Warning: TensorFlow not available: {e}")
+    print("⚠️ Disease prediction will be disabled, but assistant endpoint will work.")
+    # Create dummy functions to prevent errors
+    def load_model(*args, **kwargs):
+        return None
+    def keras_image():
+        pass
+    def preprocess_input(*args, **kwargs):
+        return None
+
+# Gemini AI imports
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
+    print("⚠️ Warning: google-generativeai not installed. Assistant feature will be disabled.")
 
 # ---------- Config ----------
 APP_ROOT = Path(__file__).resolve().parent
@@ -53,12 +83,16 @@ def load_model_or_fail(path: Path):
     except Exception:
         pass
 
-try:
-    print("Loading model...", MODEL_PATH)
-    load_model_or_fail(MODEL_PATH)
-    print("✅ Model loaded")
-except Exception as e:
-    print("❌ Model loading failed:", e)
+if TENSORFLOW_AVAILABLE:
+    try:
+        print("Loading model...", MODEL_PATH)
+        load_model_or_fail(MODEL_PATH)
+        print("✅ Model loaded")
+    except Exception as e:
+        print("❌ Model loading failed:", e)
+        model = None
+else:
+    print("⚠️ Skipping model loading - TensorFlow not available")
     model = None
 
 # ---------- Labels ----------
@@ -202,6 +236,8 @@ def preprocess_image(path: str, target_size=(224, 224)):
     2. Convert to array
     3. Apply MobileNetV2 preprocess_input (normalizes to [-1, 1])
     """
+    if not TENSORFLOW_AVAILABLE:
+        raise RuntimeError("TensorFlow is not available. Cannot preprocess images.")
     # Load and resize image
     img = keras_image.load_img(path, target_size=target_size)
     # Convert to numpy array
@@ -209,7 +245,7 @@ def preprocess_image(path: str, target_size=(224, 224)):
     # Apply MobileNetV2 preprocessing (normalizes to [-1, 1] range)
     # This matches the training preprocessing_function
     arr = preprocess_input(arr)
-    # Add batch dimension: (224, 224, 3) -> (1, 224, 224, 3)
+    # Add batch dimension: (224, 224, 224, 3) -> (1, 224, 224, 3)
     arr = np.expand_dims(arr, axis=0)
     return arr
 
@@ -331,6 +367,154 @@ def predict():
 @app.route("/static/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_DIR, filename)
+
+# ---------- Gemini Assistant Endpoint ----------
+@app.route("/api/assistant", methods=["POST"])
+def assistant():
+    """
+    AI Assistant endpoint using Google Gemini 2.5 Flash.
+    Accepts question and optional context (current result data).
+    """
+    if not GEMINI_AVAILABLE:
+        return jsonify({
+            "error": "Gemini AI is not available. Please install google-generativeai package.",
+            "status": "error"
+        }), 503
+    
+    # Get API key from environment
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return jsonify({
+            "error": "GEMINI_API_KEY environment variable not set.",
+            "status": "error"
+        }), 500
+    
+    try:
+        data = request.get_json()
+        if not data or "question" not in data:
+            return jsonify({
+                "error": "Missing 'question' in request body",
+                "status": "error"
+            }), 400
+        
+        question = data.get("question", "").strip()
+        if not question:
+            return jsonify({
+                "error": "Question cannot be empty",
+                "status": "error"
+            }), 400
+        
+        context = data.get("context")  # Optional: current result data
+        
+        # Configure Gemini
+        genai.configure(api_key=api_key)
+        
+        # Use gemini-2.5-flash (latest stable flash model with better quota)
+        # Fallback to gemini-2.0-flash if needed
+        try:
+            model = genai.GenerativeModel("gemini-2.5-flash")
+        except Exception:
+            # Fallback to gemini-2.0-flash
+            try:
+                model = genai.GenerativeModel("gemini-2.0-flash")
+            except Exception:
+                # Last resort: use experimental model
+                model = genai.GenerativeModel("gemini-2.0-flash-exp")
+        
+        # Build system prompt
+        system_prompt = """You are an expert Agriculture Assistant specializing in plant disease diagnosis, treatment recommendations, and farming practices. 
+You provide accurate, helpful, and practical advice about:
+- Plant diseases and their symptoms
+- Treatment methods and preventive measures
+- Best practices for plant care
+- Agricultural techniques
+- Organic and sustainable farming methods
+
+Always provide clear, actionable advice. If you're given context about a detected plant disease, use that information to provide more specific and relevant answers."""
+        
+        # Build the full prompt
+        if context:
+            # Include context about current detection result
+            context_info = f"""
+Current Analysis Context:
+- Detected Disease: {context.get('predicted_label', 'Unknown')}
+- Confidence: {context.get('confidence', 0) * 100:.1f}%
+- Description: {context.get('description', 'N/A')}
+- Recommended Treatment: {context.get('recommendation', 'N/A')}
+"""
+            full_prompt = f"{system_prompt}\n\n{context_info}\n\nUser Question: {question}\n\nPlease provide a helpful answer based on the context and the user's question."
+        else:
+            full_prompt = f"{system_prompt}\n\nUser Question: {question}\n\nPlease provide a helpful answer."
+        
+        # Generate response with optimized config for best quality
+        generation_config = {
+            "temperature": 0.8,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 2048,
+        }
+        
+        try:
+            response = model.generate_content(
+                full_prompt,
+                generation_config=generation_config
+            )
+            
+            # Extract text from response
+            answer = response.text if hasattr(response, 'text') else str(response)
+            
+            return jsonify({
+                "answer": answer,
+                "status": "success"
+            })
+        except Exception as api_error:
+            error_str = str(api_error)
+            print(f"Gemini API error during generation: {error_str[:500]}")
+            
+            # Handle quota/rate limit errors with user-friendly messages
+            if "429" in error_str or "quota" in error_str.lower() or "rate limit" in error_str.lower():
+                return jsonify({
+                    "error": "The AI assistant is currently experiencing high demand. Please try again in a few moments. If this persists, you may need to check your Google AI Studio quota at https://ai.dev/usage",
+                    "status": "error",
+                    "error_type": "quota_exceeded"
+                }), 429
+            elif "401" in error_str or "unauthorized" in error_str.lower() or "permission" in error_str.lower():
+                return jsonify({
+                    "error": "Invalid or expired API key. Please check your GEMINI_API_KEY in the .env file and verify it's valid at https://makersuite.google.com/app/apikey",
+                    "status": "error",
+                    "error_type": "auth_error"
+                }), 401
+            else:
+                raise api_error
+        
+    except Exception as e:
+        error_str = str(e)
+        print(f"Error in assistant endpoint: {error_str[:500]}")
+        
+        # Provide user-friendly error messages
+        if "429" in error_str or "quota" in error_str.lower():
+            return jsonify({
+                "error": "The AI assistant quota has been exceeded. Please wait a moment and try again, or check your Google AI Studio billing at https://ai.dev/usage",
+                "status": "error",
+                "error_type": "quota_exceeded"
+            }), 429
+        elif "401" in error_str or "unauthorized" in error_str.lower() or "permission" in error_str.lower() or "403" in error_str or "leaked" in error_str.lower():
+            error_msg = "Invalid, expired, or leaked API key."
+            if "leaked" in error_str.lower():
+                error_msg = "Your API key was reported as leaked and has been disabled. Please generate a new API key at https://makersuite.google.com/app/apikey and update the .env file."
+            else:
+                error_msg = "Invalid or expired API key. Please check your GEMINI_API_KEY in the .env file and verify it's valid at https://makersuite.google.com/app/apikey"
+            return jsonify({
+                "error": error_msg,
+                "status": "error",
+                "error_type": "auth_error"
+            }), 401
+        else:
+            return jsonify({
+                "error": f"Failed to get response from assistant: {error_str[:200]}",
+                "status": "error",
+                "error_details": error_str[:500] if len(error_str) > 200 else None
+            }), 500
 
 if __name__ == "__main__":
     # NOTE: For production, use gunicorn/uvicorn with --preload and set workers appropriately.

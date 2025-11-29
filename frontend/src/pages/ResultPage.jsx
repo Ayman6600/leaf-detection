@@ -24,6 +24,7 @@ import { BackgroundGradient } from "../components/ui/background-gradient";
 import { cn } from "../lib/utils";
 import { useHistory } from "../contexts/HistoryContext";
 import { useToast } from "../components/ui/toast";
+import AssistantSidebar from "../components/AssistantSidebar";
 
 const ResultPage = () => {
   const [resultData, setResultData] = useState(null);
@@ -346,8 +347,18 @@ const ResultPage = () => {
   const treatmentInfo = getTreatmentInfo(resultData.results);
   const Icon = treatmentInfo.icon;
 
+  // Prepare context data for assistant
+  const assistantContext = resultData ? {
+    predicted_label: resultData.predicted_label,
+    confidence: resultData.confidence,
+    description: treatmentInfo.description,
+    recommendation: treatmentInfo.treatment.join(' ')
+  } : null;
+
   return (
     <div className="min-h-screen relative">
+      {/* Assistant Sidebar */}
+      <AssistantSidebar context={assistantContext} />
       
     <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
       <div className="mb-10">
