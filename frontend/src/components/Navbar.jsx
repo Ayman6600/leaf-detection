@@ -11,15 +11,10 @@ import {
   MessageSquare,
   Menu,
   X,
-  Sparkles,
   History,
-  Bot,
-  Sun,
-  Moon
+  Bot
 } from "lucide-react";
 import { cn } from "../lib/utils";
-import { Button } from "./ui/button";
-import { useTheme } from "../contexts/ThemeContext";
 
 const navigation = [
   { name: "Home", href: "/", icon: Home },
@@ -35,7 +30,6 @@ const navigation = [
 const Navbar = memo(() => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { isDarkMode, toggleTheme } = useTheme();
   
   const toggleMobileMenu = useCallback(() => {
     setMobileMenuOpen(prev => !prev);
@@ -43,10 +37,6 @@ const Navbar = memo(() => {
   
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
-  }, []);
-  
-  const handleScrollToUpload = useCallback(() => {
-    document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   return (
@@ -107,29 +97,6 @@ const Navbar = memo(() => {
                   </Link>
                 );
               })}
-            </div>
-
-            {/* Dark Mode Toggle & CTA Button */}
-            <div className="hidden md:flex items-center gap-3">
-              <button
-                onClick={toggleTheme}
-                className="p-2.5 rounded-xl hover:bg-gray-100 transition-colors"
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun className="h-5 w-5 text-gray-700" />
-                ) : (
-                  <Moon className="h-5 w-5 text-gray-700" />
-                )}
-              </button>
-              <Button
-                onClick={handleScrollToUpload}
-                className="rounded-xl px-6 py-2.5 font-bold shadow-md hover:shadow-lg transition-all bg-[#1B5E20] text-white hover:bg-[#66BB6A] hover:scale-105 active:scale-95"
-                aria-label="Start analyzing plant leaf"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Get Started
-              </Button>
             </div>
 
             {/* Mobile menu button */}
@@ -213,39 +180,6 @@ const Navbar = memo(() => {
                     );
                   })}
                 </nav>
-
-                {/* Dark Mode Toggle & CTA */}
-                <div className="pt-6 border-t-2 border-gray-200 space-y-3">
-                  <button
-                    onClick={() => {
-                      toggleTheme();
-                    }}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition-colors"
-                  >
-                    {isDarkMode ? (
-                      <>
-                        <Sun className="h-5 w-5 text-gray-700" />
-                        <span className="text-base font-bold text-gray-700">Light Mode</span>
-                      </>
-                    ) : (
-                      <>
-                        <Moon className="h-5 w-5 text-gray-700" />
-                        <span className="text-base font-bold text-gray-700">Dark Mode</span>
-                      </>
-                    )}
-                  </button>
-                  <Button
-                    onClick={() => {
-                      closeMobileMenu();
-                      handleScrollToUpload();
-                    }}
-                    className="w-full rounded-xl py-6 font-bold shadow-md bg-[#1B5E20] text-white hover:bg-[#66BB6A]"
-                    aria-label="Start analyzing plant leaf"
-                  >
-                    <Sparkles className="h-5 w-5 mr-2" />
-                    Start Analysis
-                  </Button>
-                </div>
               </div>
             </motion.div>
           </>

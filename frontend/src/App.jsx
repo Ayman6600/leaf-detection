@@ -2,7 +2,6 @@ import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./components/MainLayout";
 import { Skeleton } from "./components/ui/skeleton";
-import { ThemeProvider } from "./contexts/ThemeContext";
 import { HistoryProvider } from "./contexts/HistoryContext";
 import { ToastProvider } from "./components/ui/toast";
 
@@ -28,30 +27,28 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <ThemeProvider>
-      <HistoryProvider>
-        <ToastProvider>
-          <BrowserRouter>
-            <MainLayout>
-              <Suspense fallback={<LoadingFallback />}>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/products" element={<ProductsPage />} />
-                  <Route path="/dosage" element={<DosagePage />} />
-                  <Route path="/support" element={<SupportPage />} />
-                  <Route path="/faq" element={<FAQPage />} />
-                  <Route path="/result" element={<ResultPage />} />
-                  <Route path="/history" element={<HistoryPage />} />
-                  <Route path="/assistant" element={<AssistantPage />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Suspense>
-            </MainLayout>
-          </BrowserRouter>
-        </ToastProvider>
-      </HistoryProvider>
-    </ThemeProvider>
+    <HistoryProvider>
+      <ToastProvider>
+        <BrowserRouter>
+          <MainLayout>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/dosage" element={<DosagePage />} />
+                <Route path="/support" element={<SupportPage />} />
+                <Route path="/faq" element={<FAQPage />} />
+                <Route path="/result" element={<ResultPage />} />
+                <Route path="/history" element={<HistoryPage />} />
+                <Route path="/assistant" element={<AssistantPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+          </MainLayout>
+        </BrowserRouter>
+      </ToastProvider>
+    </HistoryProvider>
   );
 }
 

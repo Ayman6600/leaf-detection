@@ -178,29 +178,6 @@ const HomePage = () => {
                 Upload a photo of your plant leaf and get instant disease diagnosis with
                 expert treatment recommendations powered by advanced machine learning
               </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Button
-                  onClick={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  size="lg"
-                  className="px-8 py-6 text-base font-semibold rounded-lg"
-                  aria-label="Start analyzing plant leaf for disease detection"
-                >
-                  <Camera className="mr-2 h-5 w-5" />
-                  Analyze Your Plant Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button
-                  onClick={() => navigate("/about")}
-                  size="lg"
-                  variant="outline"
-                  className="px-8 py-6 text-base font-semibold rounded-lg"
-                  aria-label="Learn more about the application"
-                >
-                  Learn More
-                </Button>
-              </div>
           </motion.div>
 
             {/* Stats - Minimal Cards */}
@@ -442,31 +419,6 @@ const HomePage = () => {
                 );
               })}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-              Ready to Save Your Plants?
-            </h2>
-            <p className="text-lg mb-8 opacity-90">
-              Join thousands of farmers and gardeners using AI to protect their crops
-            </p>
-            <Button
-              onClick={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
-              size="lg"
-              variant="secondary"
-              className="rounded-lg"
-              aria-label="Start analyzing your plant now"
-            >
-              <Leaf className="mr-2 h-5 w-5" />
-              Start Free Analysis Now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
           </div>
         </div>
       </section>

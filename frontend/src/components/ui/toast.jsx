@@ -45,7 +45,7 @@ const Toast = ({ toast, onRemove }) => {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className={cn(
-        'min-w-[320px] max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex items-start gap-3 border border-gray-200 dark:border-gray-700'
+        'min-w-[320px] max-w-md bg-white rounded-lg shadow-lg p-4 flex items-start gap-3 border border-gray-200'
       )}
     >
       <div className={cn('p-2 rounded-full', colors[toast.type], 'text-white')}>
@@ -53,17 +53,17 @@ const Toast = ({ toast, onRemove }) => {
       </div>
       <div className="flex-1">
         {toast.title && (
-          <h4 className="font-bold text-gray-900 dark:text-white mb-1">
+          <h4 className="font-bold text-gray-900 mb-1">
             {toast.title}
           </h4>
         )}
-        <p className="text-sm text-gray-700 dark:text-gray-300">
+        <p className="text-sm text-gray-700">
           {toast.message}
         </p>
       </div>
       <button
         onClick={() => onRemove(toast.id)}
-        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        className="text-gray-400 hover:text-gray-600 transition-colors"
       >
         <X className="h-5 w-5" />
       </button>

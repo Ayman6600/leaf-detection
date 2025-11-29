@@ -165,55 +165,6 @@ const ProductsPage = () => {
             );
           })}
         </div>
-
-        {/* CTA Section */}
-        <div className="mt-16">
-          <Card className="border shadow-sm text-center">
-            <CardHeader>
-              <div className="flex items-center justify-center mb-4">
-                <div className="p-4 rounded-lg bg-primary/10">
-                  <Leaf className="h-10 w-10 text-primary" />
-                </div>
-              </div>
-              <CardTitle className="text-2xl md:text-3xl mb-4">Why Choose Our Products?</CardTitle>
-              <CardDescription className="text-base max-w-2xl mx-auto">
-                All our Gymnema products are sourced from certified organic farms, tested for
-                purity, and processed using traditional methods to preserve natural benefits.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 md:grid-cols-3 text-left">
-                <div className="p-6 rounded-lg bg-primary/5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-lg">100% Organic</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Certified organic cultivation without harmful chemicals
-                  </p>
-                </div>
-                <div className="p-6 rounded-lg bg-primary/5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-lg">Lab Tested</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Third-party tested for purity and potency
-                  </p>
-                </div>
-                <div className="p-6 rounded-lg bg-primary/5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-lg">Fast Shipping</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Free shipping on orders over $50
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );
