@@ -1,25 +1,33 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Pill, 
-  AlertCircle, 
-  Info, 
-  Clock, 
-  Users, 
-  Sparkles, 
-  Leaf, 
-  Heart, 
-  Zap, 
+import {
+  Pill,
+  AlertCircle,
+  Info,
+  Clock,
+  Users,
+  Sparkles,
+  Leaf,
+  Heart,
+  Zap,
   ArrowLeft,
   ChevronDown,
   ChevronUp,
-  RotateCcw
+  RotateCcw,
+  Sprout,
+  Sun,
+  Droplets,
+  Shield,
+  Bug
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
+import { useTranslation } from 'react-i18next';
 
 const DosagePage = () => {
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState("cultivation");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [expandedPrecautions, setExpandedPrecautions] = useState(false);
   const [expandedTips, setExpandedTips] = useState(false);
@@ -28,27 +36,27 @@ const DosagePage = () => {
   const dosageGuides = [
     {
       id: "adults",
-      group: "Adults (General Health)",
+      group: t('dosage.group_adults'),
       icon: Users,
-      description: "General wellness and maintenance dosage recommendations",
+      description: t('dosage.group_adults_desc'),
       color: "from-[#1B5E20] to-[#66BB6A]",
       dosages: [
         {
-          form: "Leaf Extract Powder",
+          form: t('dosage.form_leaf_extract'),
           amount: "200-400 mg daily",
           timing: "With meals (breakfast & dinner)",
           notes: "Start with 200mg and gradually increase to 400mg over 2 weeks. Mix with water or juice.",
           method: "Take 1 capsule (200mg) with breakfast and 1 with dinner, or mix powder in 8oz of water.",
         },
         {
-          form: "Dried Leaf Powder",
+          form: t('dosage.form_dried_leaf'),
           amount: "2-3 grams daily",
           timing: "Divided into 2-3 doses throughout the day",
           notes: "Best taken 30 minutes before meals for blood sugar management.",
           method: "Mix 1 teaspoon (1g) in warm water or smoothie. Take morning, afternoon, and evening.",
         },
         {
-          form: "Gymnema Tea",
+          form: t('dosage.form_tea'),
           amount: "1-2 cups daily",
           timing: "Morning and/or evening",
           notes: "Steep 1-2 teaspoons of dried leaves in hot water for 5-10 minutes.",
@@ -58,20 +66,20 @@ const DosagePage = () => {
     },
     {
       id: "blood-sugar",
-      group: "Blood Sugar Support",
+      group: t('dosage.group_sugar'),
       icon: Sparkles,
-      description: "Specialized dosage for diabetes and blood sugar management",
+      description: t('dosage.group_sugar_desc'),
       color: "from-blue-500 to-cyan-500",
       dosages: [
         {
-          form: "Standardized Extract (25% Gymnemic Acids)",
+          form: t('dosage.form_std_extract'),
           amount: "400-600 mg daily",
           timing: "30 minutes before main meals",
           notes: "Higher potency for blood sugar management. Monitor glucose levels regularly.",
           method: "Take 200mg capsule 30 min before breakfast, lunch, and dinner (total 600mg/day).",
         },
         {
-          form: "Capsules (500mg each)",
+          form: t('dosage.form_capsules'),
           amount: "2-3 capsules daily",
           timing: "15-30 minutes before main meals",
           notes: "Consult healthcare provider if diabetic or on blood sugar medications.",
@@ -81,13 +89,13 @@ const DosagePage = () => {
     },
     {
       id: "weight",
-      group: "Weight Management",
+      group: t('dosage.group_weight'),
       icon: Heart,
-      description: "Dosage recommendations for weight loss and sugar cravings",
+      description: t('dosage.group_weight_desc'),
       color: "from-purple-500 to-pink-500",
       dosages: [
         {
-          form: "Leaf Extract",
+          form: t('dosage.form_leaf_extract'),
           amount: "300-400 mg daily",
           timing: "Before meals to reduce sugar cravings",
           notes: "Helps reduce sugar absorption and curb sweet cravings.",
@@ -99,73 +107,66 @@ const DosagePage = () => {
 
   const precautions = [
     {
-      title: "Consult Healthcare Provider First",
-      description:
-        "Always consult with a qualified healthcare professional before starting Gymnema sylvestre, especially if you have diabetes, hypoglycemia, or take medications that affect blood sugar levels.",
+      title: t('dosage.prec_consult'),
+      description: t('dosage.prec_consult_desc'),
       icon: AlertCircle,
     },
     {
-      title: "Medication Interactions",
-      description:
-        "Gymnema may interact with diabetes medications, insulin, blood sugar-lowering drugs, and cholesterol medications. Medical supervision is essential to prevent hypoglycemia.",
+      title: t('dosage.prec_meds'),
+      description: t('dosage.prec_meds_desc'),
       icon: Info,
     },
     {
-      title: "Pregnancy & Breastfeeding",
-      description:
-        "Not recommended during pregnancy or breastfeeding due to insufficient safety data. Avoid use unless specifically directed by a healthcare provider.",
+      title: t('dosage.prec_pregnancy'),
+      description: t('dosage.prec_pregnancy_desc'),
       icon: AlertCircle,
     },
     {
-      title: "Monitor Blood Sugar Levels",
-      description:
-        "If diabetic or pre-diabetic, monitor blood glucose levels frequently when starting Gymnema. Watch for signs of hypoglycemia: dizziness, shakiness, confusion, or weakness.",
+      title: t('dosage.prec_monitor'),
+      description: t('dosage.prec_monitor_desc'),
       icon: Zap,
     },
     {
-      title: "Surgery Precaution",
-      description:
-        "Stop taking Gymnema at least 2 weeks before scheduled surgery, as it may affect blood sugar control during and after the procedure.",
+      title: t('dosage.prec_surgery'),
+      description: t('dosage.prec_surgery_desc'),
       icon: AlertCircle,
     },
     {
-      title: "Quality & Source",
-      description:
-        "Purchase from reputable suppliers. Look for standardized extracts (25% gymnemic acids) and third-party testing certificates for purity and potency.",
+      title: t('dosage.prec_quality'),
+      description: t('dosage.prec_quality_desc'),
       icon: Leaf,
     },
   ];
 
   const administrationTips = [
     {
-      title: "Best Time to Take",
-      tip: "Take 15-30 minutes before meals for maximum effectiveness in blood sugar management and reducing sugar cravings.",
+      title: t('dosage.tip_time'),
+      tip: t('dosage.tip_time_desc'),
     },
     {
-      title: "With or Without Food",
-      tip: "Can be taken on an empty stomach, but if you experience digestive discomfort, take with a small amount of food.",
+      title: t('dosage.tip_food'),
+      tip: t('dosage.tip_food_desc'),
     },
     {
-      title: "Consistency is Key",
-      tip: "Take at the same times each day for best results. It may take 4-6 weeks to notice full effects.",
+      title: t('dosage.tip_consistency'),
+      tip: t('dosage.tip_consistency_desc'),
     },
     {
-      title: "Stay Hydrated",
-      tip: "Drink plenty of water throughout the day when taking Gymnema to support optimal absorption and metabolism.",
+      title: t('dosage.tip_hydrate'),
+      tip: t('dosage.tip_hydrate_desc'),
     },
     {
-      title: "Start Low, Go Slow",
-      tip: "Begin with the lowest recommended dose and gradually increase over 1-2 weeks to assess tolerance and effectiveness.",
+      title: t('dosage.tip_start'),
+      tip: t('dosage.tip_start_desc'),
     },
     {
-      title: "Duration of Use",
-      tip: "Can be used long-term under medical supervision. Most studies show benefits within 18-24 months of consistent use.",
+      title: t('dosage.tip_duration'),
+      tip: t('dosage.tip_duration_desc'),
     },
   ];
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
-    // Scroll to dosage section
     setTimeout(() => {
       document.getElementById("dosage-content")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -176,443 +177,300 @@ const DosagePage = () => {
     setExpandedPrecautions(false);
     setExpandedTips(false);
     setExpandedGuidelines(false);
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const selectedGuide = dosageGuides.find((guide) => guide.id === selectedCategory);
 
+  const tabs = [
+    { id: "cultivation", label: t('dosage.tab_cultivation'), icon: Sprout },
+    { id: "protection", label: t('dosage.tab_protection'), icon: Shield },
+    { id: "medicinal", label: t('dosage.tab_medicinal'), icon: Pill },
+  ];
+
   return (
-    <div className="min-h-screen relative leaf-pattern">
-      
+    <div className="min-h-screen relative bg-background">
+
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 bg-background">
+      <section className="relative pt-20 pb-12 bg-muted/30">
         <div className="container mx-auto px-4">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <div className="flex items-center justify-center mb-6">
-              <div className="p-4 rounded-3xl bg-gradient-to-br from-[#1B5E20] to-[#66BB6A] shadow-glow animate-float">
-                <Pill className="h-12 w-12 text-black" />
-              </div>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-black mb-6 text-black font-display">
-              Dosage Guide
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
+              {t('dosage.title')}
             </h1>
-            <p className="text-xl text-black max-w-2xl mx-auto font-body">
-              {selectedCategory 
-                ? "Personalized dosage recommendations for your needs"
-                : "Select your category to view personalized dosage recommendations"
-              }
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              {t('dosage.subtitle')}
             </p>
           </motion.div>
+
+          {/* Tabs Navigation */}
+          <div className="flex flex-wrap justify-center gap-4 mt-12">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all ${activeTab === tab.id
+                    ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                    : "bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 
-      {/* Important Notice */}
-      <section className="py-8 relative z-10">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <Card className="glass border-2 border-red-500/50 shadow-glow">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-2xl bg-red-500/20">
-                    <AlertCircle className="h-6 w-6 text-red-400" />
-                  </div>
-                  <CardTitle className="text-2xl text-black font-display">Important Medical Notice</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-base leading-relaxed text-black font-body">
-                  <strong className="text-black">This information is for educational purposes only</strong> and should not replace professional medical advice. 
-                  Always consult with a qualified healthcare provider before starting any new supplement, especially if you have existing health 
-                  conditions, are taking medications, are pregnant, breastfeeding, or planning surgery.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
+      <div className="container mx-auto px-4 py-12">
+        <AnimatePresence mode="wait">
+          {activeTab === "cultivation" && (
+            <motion.div
+              key="cultivation"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-5xl mx-auto grid gap-8"
+            >
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Sun className="h-5 w-5 text-primary" />
+                      {t('dosage.climate_req')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">Temperature</span>
+                      <span className="font-medium">20°C - 35°C</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">Rainfall</span>
+                      <span className="font-medium">600mm - 1000mm</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Sunlight</span>
+                      <span className="font-medium">Partial Shade</span>
+                    </div>
+                  </CardContent>
+                </Card>
 
-      {/* Category Selection Screen */}
-      <AnimatePresence mode="wait">
-        {!selectedCategory ? (
-          <motion.section
-            key="selection"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            className="py-12"
-          >
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <h2 className="text-4xl md:text-5xl font-black text-black mb-4 font-display">
-                  Choose Your Category
-                </h2>
-                <p className="text-xl text-black max-w-2xl mx-auto font-body">
-                  Select the category that best describes your needs to view personalized dosage recommendations
-                </p>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Leaf className="h-5 w-5 text-primary" />
+                      {t('dosage.soil_cond')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">Type</span>
+                      <span className="font-medium">Sandy Loam</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                      <span className="text-muted-foreground">pH Level</span>
+                      <span className="font-medium">6.5 - 7.5</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Drainage</span>
+                      <span className="font-medium">Well-drained</span>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
-                {dosageGuides.map((guide, index) => {
-                  const Icon = guide.icon;
-                  return (
-                    <motion.div
-                      key={guide.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      whileHover={{ y: -8, scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Card 
-                        className="h-full glass border-2 border-[#66BB6A]/30 shadow-glow hover:shadow-glow-lg transition-all cursor-pointer"
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sprout className="h-5 w-5 text-primary" />
+                    {t('dosage.propagation')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-4 text-muted-foreground">
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 text-sm font-bold">1</span>
+                      <span>Propagated through seeds or stem cuttings. Seeds should be sown immediately after collection as they lose viability quickly.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 text-sm font-bold">2</span>
+                      <span>Plant spacing should be 2m x 2m to allow sufficient growth. Support structures (trellises) are recommended as it is a climber.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 text-sm font-bold">3</span>
+                      <span>Regular weeding and light irrigation during dry periods are essential for establishment.</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {activeTab === "protection" && (
+            <motion.div
+              key="protection"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-5xl mx-auto grid gap-8"
+            >
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card className="border-l-4 border-l-yellow-500">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Bug className="h-5 w-5 text-yellow-500" />
+                      {t('dosage.common_pests')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold mb-1">Aphids</h4>
+                      <p className="text-sm text-muted-foreground">Small sap-sucking insects causing leaf curling. Treat with neem oil.</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">Spider Mites</h4>
+                      <p className="text-sm text-muted-foreground">Cause yellow stippling on leaves. Increase humidity and use miticides if severe.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-red-500">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5 text-red-500" />
+                      {t('dosage.common_diseases')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold mb-1">Powdery Mildew</h4>
+                      <p className="text-sm text-muted-foreground">White powdery growth on leaves. Improve air circulation and apply fungicides.</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">Leaf Spot</h4>
+                      <p className="text-sm text-muted-foreground">Brown or black spots. Remove infected leaves and avoid overhead watering.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "medicinal" && (
+            <motion.div
+              key="medicinal"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              {/* Existing Dosage Content */}
+              {!selectedCategory ? (
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {dosageGuides.map((guide, index) => {
+                    const Icon = guide.icon;
+                    return (
+                      <Card
+                        key={guide.id}
+                        className="h-full hover:shadow-lg transition-all cursor-pointer border-2 hover:border-primary/50"
                         onClick={() => handleCategorySelect(guide.id)}
                       >
                         <CardHeader className="text-center">
-                          <div className={`mx-auto mb-4 p-6 rounded-3xl bg-gradient-to-br ${guide.color} shadow-glow animate-float`}>
-                            <Icon className="h-12 w-12 text-black" />
+                          <div className={`mx-auto mb-4 p-4 rounded-full bg-gradient-to-br ${guide.color} text-white`}>
+                            <Icon className="h-8 w-8" />
                           </div>
-                          <CardTitle className="text-2xl text-black font-display mb-2">
-                            {guide.group}
-                          </CardTitle>
-                          <CardDescription className="text-base text-black font-body">
-                            {guide.description}
-                          </CardDescription>
+                          <CardTitle className="mb-2">{guide.group}</CardTitle>
+                          <CardDescription>{guide.description}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <Button 
-                            className={`w-full bg-gradient-to-r ${guide.color} text-black hover:opacity-90 font-bold`}
-                            size="lg"
-                          >
-                            View Dosage
-                            <ArrowLeft className="ml-2 h-5 w-5 rotate-180" />
-                          </Button>
+                          <Button className="w-full" variant="outline">{t('dosage.view_dosage')}</Button>
                         </CardContent>
                       </Card>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.section>
-        ) : (
-          <motion.section
-            key="dosage-content"
-            id="dosage-content"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            className="py-12"
-          >
-            <div className="container mx-auto px-4">
-              {/* Back/Reset Button */}
-              <div className="mb-8 flex items-center justify-between">
-                <Button
-                  onClick={handleReset}
-                  variant="outline"
-                  size="lg"
-                  className="font-bold border-2 border-[#66BB6A] text-black hover:bg-[#C8E6C9]/20"
-                >
-                  <RotateCcw className="mr-2 h-5 w-5" />
-                  Change Category
-                </Button>
-                {selectedGuide && (
-                  <Badge className="bg-gradient-to-r from-[#1B5E20] to-[#66BB6A] text-black font-bold text-lg px-6 py-2">
-                    {selectedGuide.group}
-                  </Badge>
-                )}
-              </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div id="dosage-content" className="max-w-4xl mx-auto">
+                  <Button onClick={handleReset} variant="ghost" className="mb-6">
+                    <ArrowLeft className="mr-2 h-4 w-4" /> {t('dosage.back_categories')}
+                  </Button>
 
-              {/* Selected Category Dosage Guidelines */}
-              {selectedGuide && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <Card className="glass border-2 border-[#66BB6A]/30 shadow-glow-lg mb-8">
-                    <CardHeader>
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className={`p-3 rounded-2xl bg-gradient-to-br ${selectedGuide.color} shadow-glow`}>
-                          <selectedGuide.icon className="h-6 w-6 text-black" />
+                  {selectedGuide && (
+                    <Card className="mb-8">
+                      <CardHeader>
+                        <div className="flex items-center gap-4">
+                          <div className={`p-3 rounded-full bg-gradient-to-br ${selectedGuide.color} text-white`}>
+                            <selectedGuide.icon className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <CardTitle className="text-2xl">{selectedGuide.group}</CardTitle>
+                            <CardDescription>{selectedGuide.description}</CardDescription>
+                          </div>
                         </div>
-                        <div>
-                          <CardTitle className="text-3xl text-black font-display">
-                            {selectedGuide.group}
-                          </CardTitle>
-                          <CardDescription className="text-lg text-black mt-1">
-                            {selectedGuide.description}
-                          </CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-6">
+                      </CardHeader>
+                      <CardContent className="space-y-6">
                         {selectedGuide.dosages.map((dosage, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.2 + index * 0.1 }}
-                            className="p-6 rounded-2xl glass-light border border-[#66BB6A]/20"
-                          >
-                            <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
-                              <h4 className="font-black text-xl text-black font-display">
-                                {dosage.form}
-                              </h4>
-                              <Badge className="bg-gradient-to-r from-[#1B5E20] to-[#66BB6A] text-black font-bold text-base px-4 py-1">
-                                {dosage.amount}
-                              </Badge>
+                          <div key={index} className="p-4 rounded-lg bg-muted/50 border">
+                            <h4 className="font-bold text-lg mb-2">{dosage.form}</h4>
+                            <div className="grid md:grid-cols-2 gap-4 text-sm">
+                              <div><span className="font-semibold">{t('dosage.amount')}:</span> {dosage.amount}</div>
+                              <div><span className="font-semibold">{t('dosage.timing')}:</span> {dosage.timing}</div>
+                              <div className="col-span-2"><span className="font-semibold">{t('dosage.method')}:</span> {dosage.method}</div>
+                              <div className="col-span-2 text-muted-foreground"><span className="font-semibold">{t('dosage.note')}:</span> {dosage.notes}</div>
                             </div>
-                            
-                            <div className="space-y-4">
-                              <div className="flex items-start gap-3">
-                                <Clock className="h-5 w-5 text-[#66BB6A] mt-0.5 flex-shrink-0" />
-                                <div>
-                                  <p className="text-sm font-bold text-[#1B5E20] mb-1">Timing:</p>
-                                  <p className="text-base text-black font-body">{dosage.timing}</p>
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-start gap-3">
-                                <Info className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                                <div>
-                                  <p className="text-sm font-bold text-blue-300 mb-1">How to Take:</p>
-                                  <p className="text-base text-black font-body">{dosage.method}</p>
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-start gap-3">
-                                <Sparkles className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
-                                <div>
-                                  <p className="text-sm font-bold text-yellow-300 mb-1">Important Notes:</p>
-                                  <p className="text-base text-black font-body">{dosage.notes}</p>
-                                </div>
-                              </div>
-                            </div>
-                          </motion.div>
+                          </div>
                         ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Precautions Section */}
+                  <div className="grid md:grid-cols-2 gap-6 mt-8">
+                    {precautions.map((item, index) => {
+                      const Icon = item.icon;
+                      return (
+                        <Card key={index} className="border-l-4 border-l-red-500">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-lg flex items-center gap-2">
+                              <Icon className="h-5 w-5 text-red-500" />
+                              {item.title}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-sm text-muted-foreground">{item.description}</p>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+
+                  {/* Tips Section */}
+                  <div className="grid md:grid-cols-2 gap-6 mt-8">
+                    {administrationTips.map((item, index) => (
+                      <Card key={index} className="bg-primary/5 border-primary/20">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-lg text-primary">{item.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm">{item.tip}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                </div>
               )}
-
-              {/* Collapsible Administration Tips */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mb-8"
-              >
-                <Card className="glass border-2 border-[#66BB6A]/30 shadow-glow">
-                  <button
-                    onClick={() => setExpandedTips(!expandedTips)}
-                    className="w-full text-left"
-                  >
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-2xl text-black font-display">
-                          Administration Tips
-                        </CardTitle>
-                        <div className="flex-shrink-0">
-                          {expandedTips ? (
-                            <ChevronUp className="h-6 w-6 text-[#66BB6A]" />
-                          ) : (
-                            <ChevronDown className="h-6 w-6 text-[#66BB6A]" />
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </button>
-                  <AnimatePresence>
-                    {expandedTips && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <CardContent>
-                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {administrationTips.map((tip, index) => (
-                              <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                              >
-                                <Card className="h-full glass-light border border-[#66BB6A]/20">
-                                  <CardHeader>
-                                    <CardTitle className="text-lg text-black font-display">
-                                      {tip.title}
-                                    </CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <p className="text-base text-black leading-relaxed font-body">
-                                      {tip.tip}
-                                    </p>
-                                  </CardContent>
-                                </Card>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Card>
-              </motion.div>
-
-              {/* Collapsible Precautions */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="mb-8"
-              >
-                <Card className="glass border-2 border-red-500/30 shadow-glow">
-                  <button
-                    onClick={() => setExpandedPrecautions(!expandedPrecautions)}
-                    className="w-full text-left"
-                  >
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-2xl text-black font-display">
-                          Important Precautions
-                        </CardTitle>
-                        <div className="flex-shrink-0">
-                          {expandedPrecautions ? (
-                            <ChevronUp className="h-6 w-6 text-red-400" />
-                          ) : (
-                            <ChevronDown className="h-6 w-6 text-red-400" />
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </button>
-                  <AnimatePresence>
-                    {expandedPrecautions && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <CardContent>
-                          <div className="grid gap-6 md:grid-cols-2">
-                            {precautions.map((precaution, index) => {
-                              const Icon = precaution.icon;
-                              return (
-                                <motion.div
-                                  key={index}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.05 }}
-                                >
-                                  <Card className="h-full glass-light border border-red-500/20">
-                                    <CardHeader>
-                                      <CardTitle className="text-xl flex items-start gap-3 text-black font-display">
-                                        <Icon className="h-6 w-6 text-red-400 mt-1 flex-shrink-0" />
-                                        {precaution.title}
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                      <p className="text-base text-black leading-relaxed font-body">
-                                        {precaution.description}
-                                      </p>
-                                    </CardContent>
-                                  </Card>
-                                </motion.div>
-                              );
-                            })}
-                          </div>
-                        </CardContent>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Card>
-              </motion.div>
-
-              {/* Collapsible General Guidelines */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Card className="glass border-2 border-[#66BB6A]/30 shadow-glow">
-                  <button
-                    onClick={() => setExpandedGuidelines(!expandedGuidelines)}
-                    className="w-full text-left"
-                  >
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-2xl text-black font-display">
-                          General Guidelines
-                        </CardTitle>
-                        <div className="flex-shrink-0">
-                          {expandedGuidelines ? (
-                            <ChevronUp className="h-6 w-6 text-[#66BB6A]" />
-                          ) : (
-                            <ChevronDown className="h-6 w-6 text-[#66BB6A]" />
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                  </button>
-                  <AnimatePresence>
-                    {expandedGuidelines && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <CardContent>
-                          <div className="grid gap-8 md:grid-cols-3">
-                            <div className="text-center p-6 rounded-2xl glass-light border border-[#66BB6A]/20">
-                              <div className="text-5xl font-black text-[#66BB6A] mb-2 font-display">4-6</div>
-                              <div className="text-sm font-bold text-black mb-2 font-body">Weeks</div>
-                              <div className="text-sm text-black font-body">
-                                Typical time to notice full effects
-                              </div>
-                            </div>
-                            <div className="text-center p-6 rounded-2xl glass-light border border-[#66BB6A]/20">
-                              <div className="text-5xl font-black text-[#66BB6A] mb-2 font-display">15-30</div>
-                              <div className="text-sm font-bold text-black mb-2 font-body">Minutes</div>
-                              <div className="text-sm text-black font-body">
-                                Take before meals for blood sugar support
-                              </div>
-                            </div>
-                            <div className="text-center p-6 rounded-2xl glass-light border border-[#66BB6A]/20">
-                              <div className="text-5xl font-black text-[#66BB6A] mb-2 font-display">2-3x</div>
-                              <div className="text-sm font-bold text-black mb-2 font-body">Daily</div>
-                              <div className="text-sm text-black font-body">
-                                Divided doses throughout day work best
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Card>
-              </motion.div>
-            </div>
-          </motion.section>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

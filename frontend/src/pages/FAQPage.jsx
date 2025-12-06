@@ -6,43 +6,45 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { BackgroundGradient } from "../components/ui/background-gradient";
 import { Spotlight } from "../components/ui/spotlight";
+import { useTranslation } from 'react-i18next';
 
 const FAQPage = () => {
+  const { t } = useTranslation();
   const [openIndex, setOpenIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
 
   const faqSections = [
     {
-      question: "How do I identify powdery mildew?",
-      answer: "White powdery patches appear on leaves and stems. Look for a flour-like coating on the upper surface of leaves.",
+      question: t('faq.q1'),
+      answer: t('faq.a1'),
     },
     {
-      question: "What conditions cause powdery mildew?",
-      answer: "High humidity, crowding, and poor airflow encourage powdery mildew. It thrives in warm, dry conditions with high humidity.",
+      question: t('faq.q2'),
+      answer: t('faq.a2'),
     },
     {
-      question: "What causes leaf spot?",
-      answer: "Fungal or bacterial infection favored by wet conditions. Typically appears as brown or black spots with yellow halos.",
+      question: t('faq.q3'),
+      answer: t('faq.a3'),
     },
     {
-      question: "What do aphids look like?",
-      answer: "Small green, black, or yellow insects on leaves and stems. They cluster on new growth and undersides of leaves.",
+      question: t('faq.q4'),
+      answer: t('faq.a4'),
     },
     {
-      question: "What are Gymnema's medicinal uses?",
-      answer: "Helps manage diabetes, weight, and cholesterol. Known as 'sugar destroyer' in traditional medicine.",
+      question: t('faq.q5'),
+      answer: t('faq.a5'),
     },
     {
-      question: "Typical adult dosage?",
-      answer: "200–400 mg extract or 2–3 grams dried leaf daily. Always consult a healthcare professional first.",
+      question: t('faq.q6'),
+      answer: t('faq.a6'),
     },
     {
-      question: "How accurate is the AI detection?",
-      answer: "Our AI model achieves 99.2% accuracy, trained on over 10,000 leaf images with continuous improvements.",
+      question: t('faq.q7'),
+      answer: t('faq.a7'),
     },
     {
-      question: "Is my data secure?",
-      answer: "Yes! We use secure encryption and never store your images permanently. All processing is done in real-time.",
+      question: t('faq.q8'),
+      answer: t('faq.a8'),
     },
   ];
 
@@ -55,24 +57,24 @@ const FAQPage = () => {
   const resources = [
     {
       icon: Book,
-      title: "Knowledge Base",
+      title: t('faq.kb'),
       description: "Comprehensive guides and tutorials",
     },
     {
       icon: Video,
-      title: "Video Tutorials",
+      title: t('faq.video'),
       description: "Step-by-step video guides",
     },
     {
       icon: Users,
-      title: "Community Forum",
+      title: t('faq.forum'),
       description: "Connect with other users",
     },
   ];
 
   return (
     <div className="min-h-screen relative">
-      
+
       {/* Hero Section */}
       <div className="relative h-[40vh] flex items-center justify-center z-10">
         <Spotlight
@@ -80,7 +82,7 @@ const FAQPage = () => {
           fill="hsl(142 76% 42%)"
         />
         <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -93,10 +95,10 @@ const FAQPage = () => {
             </div>
           </div>
           <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-b from-foreground to-foreground/50 bg-clip-text text-transparent">
-            Frequently Asked Questions
+            {t('faq.title')}
           </h1>
           <p className="text-xl text-black max-w-2xl mx-auto">
-            Find answers to common questions about leaf disease detection
+            {t('faq.subtitle')}
           </p>
         </motion.div>
       </div>
@@ -114,17 +116,17 @@ const FAQPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center text-2xl">
                   <Search className="mr-3 h-6 w-6 text-primary" />
-                  Search FAQs
+                  {t('faq.search_title')}
                 </CardTitle>
                 <CardDescription className="text-base">
-                  Can't find what you're looking for? Search our knowledge base
+                  {t('faq.search_desc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-3 mb-6">
                   <Input
                     type="text"
-                    placeholder="Search questions..."
+                    placeholder={t('faq.search_placeholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1 h-12 text-base rounded-xl"
@@ -135,7 +137,7 @@ const FAQPage = () => {
                 </div>
                 <Button variant="outline" size="lg" className="w-full font-bold">
                   <MessageCircle className="mr-2 h-5 w-5" />
-                  Contact Support Team
+                  {t('faq.contact_support')}
                 </Button>
               </CardContent>
             </Card>
@@ -197,7 +199,7 @@ const FAQPage = () => {
         {/* Resources */}
         <div>
           <h2 className="text-4xl font-black text-center mb-12 bg-gradient-to-b from-foreground to-foreground/50 bg-clip-text text-transparent">
-            Helpful Resources
+            {t('faq.resources_title')}
           </h2>
           <div className="grid gap-8 md:grid-cols-3">
             {resources.map((resource, index) => {
@@ -224,7 +226,7 @@ const FAQPage = () => {
                           {resource.description}
                         </CardDescription>
                         <Button variant="outline" className="w-full font-bold">
-                          Explore
+                          {t('faq.explore')}
                         </Button>
                       </CardContent>
                     </Card>

@@ -38,6 +38,7 @@ frontend/.vite/
 
 # IDE
 .vscode/
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -63,3 +64,9 @@ training_output.log
 # Temporary files
 *.tmp
 *.temp
+backend/plant_disease_model.h5
+*.h5
+backend/dataset/
+*.pth
+
+backend/plant_disease_model.h5

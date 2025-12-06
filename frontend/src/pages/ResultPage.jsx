@@ -1,613 +1,543 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { jsPDF } from "jspdf";
-import { 
-  ArrowLeft, 
-  Download, 
-  Leaf, 
-  AlertCircle, 
-  CheckCircle2, 
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  Download,
+  Share2,
+  ArrowLeft,
+  AlertTriangle,
+  CheckCircle,
   Droplets,
   Sun,
   Wind,
-  TrendingUp,
+  Thermometer,
   Activity,
-  Sparkles
-} from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
-import { Separator } from "../components/ui/separator";
-import { Skeleton } from "../components/ui/skeleton";
-import { BackgroundGradient } from "../components/ui/background-gradient";
-import { cn } from "../lib/utils";
-import { useHistory } from "../contexts/HistoryContext";
-import { useToast } from "../components/ui/toast";
-import AssistantSidebar from "../components/AssistantSidebar";
+  FileText,
+  Scan,
+  Shield
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Progress } from '../components/ui/progress';
+import { BackgroundGradient } from '../components/ui/background-gradient';
+import { useToast } from '../components/ui/toast';
+import jsPDF from 'jspdf';
+import { useTranslation } from 'react-i18next';
 
 const ResultPage = () => {
-  const [resultData, setResultData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { t } = useTranslation();
+  const location = useLocation();
   const navigate = useNavigate();
-  const { addToHistory, history } = useHistory();
-  const toast = useToast();
+  const { toast } = useToast();
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedResult = localStorage.getItem("predictionResult");
-    if (storedResult) {
-      try {
-        const parsedResult = JSON.parse(storedResult);
-        setResultData(parsedResult);
-        
-        // Save to history if image URL is available
-        const storedImageUrl = localStorage.getItem("lastAnalyzedImageUrl");
-        if (storedImageUrl) {
-          // Check if this result is already in history to avoid duplicates
-          const isDuplicate = history.some(item => 
-            item.predictedLabel === parsedResult.predicted_label && 
-            Math.abs(item.confidence - parsedResult.confidence) < 0.1 &&
-            Math.abs(new Date(item.timestamp).getTime() - Date.now()) < 5000 // Within 5 seconds
-          );
-          
-          if (!isDuplicate) {
-            addToHistory(parsedResult, storedImageUrl);
-          }
-          // Clean up stored image URL
-          localStorage.removeItem("lastAnalyzedImageUrl");
-        }
-      } catch (err) {
-        console.error("Error parsing result data:", err);
-        setError("Failed to load prediction results. Please try again.");
-        toast.error("Failed to load prediction results");
-      }
-    } else {
-      setError("No prediction results found. Please upload an image first.");
-      toast.warning("No prediction results found");
+    // Try to get data from location state first, then localStorage
+    const stateData = location.state;
+    const localData = localStorage.getItem('predictionResult');
+
+    if (stateData) {
+      setResult(stateData);
+    } else if (localData) {
+      setResult(JSON.parse(localData));
     }
+
     setLoading(false);
-  }, [addToHistory, history, toast]);
-
-  const getTreatmentInfo = (results) => {
-    let maxDisease = "";
-    let maxProbability = 0;
-
-    Object.entries(results).forEach(([disease, probability]) => {
-      if (probability > maxProbability) {
-        maxProbability = probability;
-        maxDisease = disease;
-      }
-    });
-
-    const getTreatment = (disease, probability) => {
-      switch (disease) {
-        case "Healthy":
-          return {
-            title: "Healthy Plant",
-            description: "Your Gymnema sylvestre plant is healthy! Continue with proper care.",
-            treatment: [
-              "Water when the top inch of soil feels dry",
-              "Provide bright, indirect sunlight",
-              "Maintain temperatures between 65-80°F",
-              "Ensure good air circulation",
-              "Fertilize monthly during growing season",
-              "Regularly inspect for pests and diseases",
-            ],
-            severity: "low",
-            icon: CheckCircle2,
-            color: "text-[#1B5E20]",
-            bgColor: "from-[#C8E6C9]/30 to-[#66BB6A]/10",
-          };
-
-        case "Powdery mildew":
-          return {
-            title: "Powdery Mildew",
-            description: "Fungal disease that appears as white powdery spots on leaves.",
-            treatment:
-              probability <= 30
-                ? [
-                    "Remove affected leaves immediately",
-                    "Improve air circulation around plants",
-                    "Avoid overhead watering",
-                    "Apply milk spray (1:10 ratio) weekly as preventive measure",
-                  ]
-                : probability <= 60
-                ? [
-                    "Remove and dispose of infected plant material",
-                    "Apply potassium bicarbonate solution (1 tbsp + ½ tsp liquid soap per gallon)",
-                    "Spray thoroughly on both sides of leaves every 7-10 days",
-                    "Space plants adequately for better air circulation",
-                  ]
-                : [
-                    "Remove heavily infected leaves and dispose in sealed bags",
-                    "Apply sulfur-based fungicide according to manufacturer instructions",
-                    "Treat surrounding plants as preventive measure",
-                    "Improve growing conditions (airflow, spacing, watering practices)",
-                  ],
-            severity: probability <= 30 ? "low" : probability <= 60 ? "medium" : "high",
-            icon: AlertCircle,
-            color: probability <= 30 ? "text-yellow-600" : probability <= 60 ? "text-orange-600" : "text-red-600",
-            bgColor: probability <= 30 ? "from-yellow-500/20 to-yellow-600/5" : probability <= 60 ? "from-orange-500/20 to-orange-600/5" : "from-red-500/20 to-red-600/5",
-          };
-
-        case "Leaf spot":
-          return {
-            title: "Leaf Spot",
-            description: "Bacterial or fungal disease causing spots on leaves.",
-            treatment:
-              probability <= 30
-                ? [
-                    "Remove spotted leaves immediately",
-                    "Avoid overhead watering",
-                    "Improve air circulation",
-                    "Apply neem oil spray (2ml per liter) as preventive measure",
-                  ]
-                : probability <= 60
-                ? [
-                    "Remove and destroy infected leaves",
-                    "Apply copper-based fungicide (follow label instructions)",
-                    "Water at soil level, not on foliage",
-                    "Increase spacing between plants for better airflow",
-                  ]
-                : [
-                    "Remove all severely affected leaves",
-                    "Apply copper fungicide every 7-14 days",
-                    "Consider crop rotation for next planting",
-                    "Improve drainage and reduce humidity around plants",
-                  ],
-            severity: probability <= 30 ? "low" : probability <= 60 ? "medium" : "high",
-            icon: AlertCircle,
-            color: probability <= 30 ? "text-yellow-600" : probability <= 60 ? "text-orange-600" : "text-red-600",
-            bgColor: probability <= 30 ? "from-yellow-500/20 to-yellow-600/5" : probability <= 60 ? "from-orange-500/20 to-orange-600/5" : "from-red-500/20 to-red-600/5",
-          };
-
-        case "Aphids (Aphis sp.)":
-          return {
-            title: "Aphids Infestation",
-            description: "Small insects that feed on plant sap.",
-            treatment:
-              probability <= 30
-                ? [
-                    "Spray plants with strong water jet to dislodge aphids",
-                    "Introduce beneficial insects like ladybugs",
-                    "Apply neem oil spray (2ml per liter) in the evening",
-                  ]
-                : probability <= 60
-                ? [
-                    "Apply insecticidal soap (2 tsp per liter)",
-                    "Spray thoroughly, covering undersides of leaves",
-                    "Check for ants and control them (they protect aphids)",
-                    "Repeat treatment every 3-4 days until controlled",
-                  ]
-                : [
-                    "Use neem oil or pyrethrin-based insecticide",
-                    "Apply systemic insecticide if infestation persists",
-                    "Remove heavily infested plant parts",
-                    "Monitor and reapply treatment as needed",
-                  ],
-            severity: probability <= 30 ? "low" : probability <= 60 ? "medium" : "high",
-            icon: AlertCircle,
-            color: probability <= 30 ? "text-yellow-600" : probability <= 60 ? "text-orange-600" : "text-red-600",
-            bgColor: probability <= 30 ? "from-yellow-500/20 to-yellow-600/5" : probability <= 60 ? "from-orange-500/20 to-orange-600/5" : "from-red-500/20 to-red-600/5",
-          };
-
-        default:
-          return {
-            title: "Unknown Condition",
-            description: "Unable to determine specific treatment.",
-            treatment: [
-              "Consult with a plant specialist for proper diagnosis",
-              "Monitor plant health closely",
-              "Ensure proper growing conditions",
-            ],
-            severity: "unknown",
-            icon: AlertCircle,
-            color: "text-black",
-            bgColor: "from-gray-500/20 to-gray-600/5",
-          };
-      }
-    };
-
-    return {
-      disease: maxDisease,
-      confidence: maxProbability,
-      ...getTreatment(maxDisease, maxProbability),
-    };
-  };
-
-  const downloadReport = () => {
-    if (!resultData) return;
-
-    const doc = new jsPDF();
-    const treatmentInfo = getTreatmentInfo(resultData.results);
-
-    doc.setFontSize(20);
-    doc.setTextColor(46, 125, 50);
-    doc.text("Leaf Disease Detection Report", 105, 20, { align: "center" });
-
-    doc.setDrawColor(46, 125, 50);
-    doc.line(20, 25, 190, 25);
-
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Predicted Disease: ${resultData.predicted_label}`, 20, 40);
-    doc.text(`Confidence Level: ${resultData.confidence}%`, 20, 50);
-
-    doc.setFontSize(14);
-    doc.text("Probability Distribution:", 20, 70);
-
-    let yPos = 80;
-    doc.setFontSize(12);
-    Object.entries(resultData.results)
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([disease, probability]) => {
-        doc.text(`${disease}: ${probability}%`, 30, yPos);
-        yPos += 10;
-      });
-
-    yPos += 10;
-    doc.setFontSize(14);
-    doc.setTextColor(46, 125, 50);
-    doc.text("Recommended Treatment:", 20, yPos);
-
-    yPos += 10;
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Condition: ${treatmentInfo.title}`, 20, yPos);
-    yPos += 10;
-    doc.text(`Description: ${treatmentInfo.description}`, 20, yPos);
-
-    yPos += 10;
-    doc.text("Treatment Plan:", 20, yPos);
-    yPos += 10;
-    treatmentInfo.treatment.forEach((step) => {
-      doc.text(`• ${step}`, 30, yPos);
-      yPos += 8;
-    });
-
-    yPos += 10;
-    doc.setDrawColor(200, 200, 200);
-    doc.line(20, yPos, 190, yPos);
-    yPos += 10;
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Report Generated: ${new Date().toLocaleString()}`, 20, yPos);
-
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
-    doc.text(
-      "This report was generated by the Leaf AI Detection System",
-      105,
-      280,
-      { align: "center" }
-    );
-
-    const filename = `leaf-disease-report-${Date.now()}.pdf`;
-    doc.save(filename);
-  };
+  }, [location.state]);
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-24">
-        <div className="flex items-center justify-center h-96">
-          <div className="flex flex-col items-center space-y-4">
-            <Skeleton className="h-20 w-20 rounded-full" />
-            <Skeleton className="h-6 w-64" />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#1B5E20]"></div>
+      </div>
+    );
+  }
+
+  if (!result) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+        <AlertTriangle className="h-16 w-16 text-yellow-500 mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('result.no_results')}</h2>
+        <p className="text-gray-600 mb-8 text-center max-w-md">
+          {t('result.no_results_text')}
+        </p>
+        <Button
+          onClick={() => navigate('/')}
+          className="bg-[#1B5E20] hover:bg-[#2E7D32]"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {t('result.back_home')}
+        </Button>
+      </div>
+    );
+  }
+
+  const { predicted_label, confidence, results } = result;
+
+  // Helper to translate labels
+  const getTranslatedLabel = (label) => {
+    const keyMap = {
+      'Powdery Mildew': 'result.label_powdery_mildew',
+      'Powdery mildew': 'result.label_powdery_mildew', // Match API
+      'Leaf Spot': 'result.label_leaf_spot',
+      'Leaf spot': 'result.label_leaf_spot', // Match API
+      'Aphids': 'result.label_aphids',
+      'Aphids (Aphis sp.)': 'result.label_aphids', // Match API
+      'Healthy': 'result.label_healthy'
+    };
+    return t(keyMap[label] || 'result.label_unknown');
+  };
+
+  const translatedLabel = getTranslatedLabel(predicted_label);
+
+  // Format confidence: if < 1 (e.g. 0.88), multiply by 100. If > 1 (e.g. 88.75), keep as is.
+  const rawConfidence = parseFloat(confidence);
+  const formattedConfidence = (rawConfidence <= 1 ? rawConfidence * 100 : rawConfidence).toFixed(2);
+
+  // Get treatment info based on prediction
+  const getTreatmentInfo = (label) => {
+    const treatments = {
+      'Powdery Mildew': {
+        risk: t('result.moderate_risk'),
+        color: 'text-yellow-600',
+        bg: 'bg-yellow-100',
+        description: t('result.pm_desc'),
+        steps: [
+          t('result.pm_step1'),
+          t('result.pm_step2'),
+          t('result.pm_step3'),
+          t('result.pm_step4')
+        ],
+        prevention: {
+          water: t('result.watering'),
+          sun: t('result.lighting'),
+          air: t('result.airflow')
+        }
+      },
+      'Powdery mildew': {
+        risk: t('result.moderate_risk'),
+        color: 'text-yellow-600',
+        bg: 'bg-yellow-100',
+        description: t('result.pm_desc'),
+        steps: [
+          t('result.pm_step1'),
+          t('result.pm_step2'),
+          t('result.pm_step3'),
+          t('result.pm_step4')
+        ],
+        prevention: {
+          water: t('result.watering'),
+          sun: t('result.lighting'),
+          air: t('result.airflow')
+        }
+      },
+      'Leaf Spot': {
+        risk: t('result.high_risk'),
+        color: 'text-red-600',
+        bg: 'bg-red-100',
+        description: t('result.ls_desc'),
+        steps: [
+          t('result.ls_step1'),
+          t('result.ls_step2'),
+          t('result.ls_step3'),
+          t('result.ls_step4')
+        ],
+        prevention: {
+          water: t('result.watering'),
+          sun: t('result.lighting'),
+          air: t('result.airflow')
+        }
+      },
+      'Leaf spot': {
+        risk: t('result.high_risk'),
+        color: 'text-red-600',
+        bg: 'bg-red-100',
+        description: t('result.ls_desc'),
+        steps: [
+          t('result.ls_step1'),
+          t('result.ls_step2'),
+          t('result.ls_step3'),
+          t('result.ls_step4')
+        ],
+        prevention: {
+          water: t('result.watering'),
+          sun: t('result.lighting'),
+          air: t('result.airflow')
+        }
+      },
+      'Aphids': {
+        risk: t('result.moderate_risk'),
+        color: 'text-orange-600',
+        bg: 'bg-orange-100',
+        description: t('result.aphids_desc'),
+        steps: [
+          t('result.aphids_step1'),
+          t('result.aphids_step2'),
+          t('result.aphids_step3'),
+          t('result.aphids_step4')
+        ],
+        prevention: {
+          water: t('result.watering'),
+          sun: t('result.lighting'),
+          air: t('result.airflow')
+        }
+      },
+      'Aphids (Aphis sp.)': {
+        risk: t('result.moderate_risk'),
+        color: 'text-orange-600',
+        bg: 'bg-orange-100',
+        description: t('result.aphids_desc'),
+        steps: [
+          t('result.aphids_step1'),
+          t('result.aphids_step2'),
+          t('result.aphids_step3'),
+          t('result.aphids_step4')
+        ],
+        prevention: {
+          water: t('result.watering'),
+          sun: t('result.lighting'),
+          air: t('result.airflow')
+        }
+      },
+      'Healthy': {
+        risk: t('result.low_risk'),
+        color: 'text-green-600',
+        bg: 'bg-green-100',
+        description: t('result.healthy_desc'),
+        steps: [
+          t('result.healthy_step1'),
+          t('result.healthy_step2'),
+          t('result.healthy_step3'),
+          t('result.healthy_step4')
+        ],
+        prevention: {
+          water: t('result.watering'),
+          sun: t('result.lighting'),
+          air: t('result.airflow')
+        }
+      }
+    };
+
+    // Fallback for unknown conditions
+    const unknownTreatment = {
+      risk: t('result.unknown_risk') || 'Unknown Risk',
+      color: 'text-gray-600',
+      bg: 'bg-gray-100',
+      description: t('result.unknown_desc') || 'The condition could not be identified with high confidence. Please consult an expert.',
+      steps: [
+        t('result.unknown_step1') || 'Consult a local agricultural expert',
+        t('result.unknown_step2') || 'Monitor the plant for further symptoms',
+        t('result.unknown_step3') || 'Isolate the plant to prevent potential spread',
+        t('result.unknown_step4') || 'Ensure optimal growing conditions'
+      ],
+      prevention: {
+        water: '-',
+        sun: '-',
+        air: '-'
+      }
+    };
+
+    return treatments[label] || unknownTreatment;
+  };
+
+  const info = getTreatmentInfo(predicted_label);
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    // Add Header
+    doc.setFillColor(27, 94, 32); // #1B5E20
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.text("Leaf AI Analysis Report", 105, 25, { align: "center" });
+
+    // Add Content
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 50);
+
+    // Result Section
+    doc.setFontSize(16);
+    doc.setTextColor(27, 94, 32);
+    doc.text("Diagnosis Result", 20, 70);
+
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Condition: ${translatedLabel}`, 20, 85);
+    doc.text(`Confidence: ${formattedConfidence}%`, 20, 95);
+    doc.text(`Risk Level: ${info.risk}`, 20, 105);
+
+    // Treatment Section
+    doc.setFontSize(16);
+    doc.setTextColor(27, 94, 32);
+    doc.text("Recommended Treatment", 20, 125);
+
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    let yPos = 140;
+    info.steps.forEach((step, index) => {
+      doc.text(`${index + 1}. ${step}`, 20, yPos);
+      yPos += 10;
+    });
+
+    // Prevention Section
+    doc.setFontSize(16);
+    doc.setTextColor(27, 94, 32);
+    doc.text("Prevention & Care", 20, yPos + 20);
+
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Watering: ${info.prevention.water}`, 20, yPos + 35);
+    doc.text(`Sunlight: ${info.prevention.sun}`, 20, yPos + 45);
+    doc.text(`Airflow: ${info.prevention.air}`, 20, yPos + 55);
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(128, 128, 128);
+    doc.text("Generated by Leaf AI - Plant Disease Detection System", 105, 280, { align: "center" });
+
+    doc.save("leaf-ai-report.pdf");
+    toast.success("Report downloaded successfully");
+  };
+
+  return (
+    <div className="min-h-screen relative bg-[#0A1F1C] pb-20 text-white">
+
+      {/* Header Section */}
+      <div className="bg-[#0A1F1C] pt-20 pb-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80')] opacity-20 bg-cover bg-center" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A1F1C]/50 via-[#0A1F1C]/80 to-[#0A1F1C]" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <Button
+            variant="ghost"
+            className="text-white hover:bg-white/10 mb-6"
+            onClick={() => navigate('/')}
+          >
+            <ArrowLeft className="mr-2 h-5 w-5" />
+            {t('result.back_home')}
+          </Button>
+
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <Badge className={`mb-4 px-4 py-1 text-base ${info.bg} ${info.color} border-0`}>
+                {info.risk}
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-black mb-2 font-display text-white">
+                {translatedLabel}
+              </h1>
+              <p className="text-xl text-gray-300 max-w-2xl font-body">
+                {info.description}
+              </p>
+            </div>
+
+            <div className="bg-[#1B4D3E] rounded-2xl p-6 border border-[#E5C558]/20 shadow-xl backdrop-blur-sm">
+              <div className="text-sm text-[#E5C558] mb-1 font-bold uppercase tracking-wider">{t('result.confidence')}</div>
+              <div className="text-4xl font-black text-white">{formattedConfidence}%</div>
+            </div>
           </div>
         </div>
       </div>
-    );
-  }
 
-  if (error && !resultData) {
-    return (
-      <div className="container mx-auto px-4 py-24">
-        <BackgroundGradient className="rounded-3xl max-w-2xl mx-auto">
-          <Card className="border-0">
-            <CardHeader>
-              <CardTitle className="text-destructive text-2xl">Error</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-black mb-6 text-lg">{error}</p>
-              <Button onClick={() => navigate("/")} size="lg" className="font-bold">
-                <ArrowLeft className="mr-2 h-5 w-5" />
-                Back to Home
-              </Button>
-            </CardContent>
-          </Card>
-        </BackgroundGradient>
-      </div>
-    );
-  }
+      <div className="container mx-auto px-4 -mt-20 relative z-20">
+        <div className="grid lg:grid-cols-3 gap-8">
 
-  if (!resultData) {
-    return (
-      <div className="container mx-auto px-4 py-24">
-        <BackgroundGradient className="rounded-3xl max-w-2xl mx-auto">
-          <Card className="border-0">
-            <CardHeader>
-              <CardTitle className="text-2xl">No Results Found</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-black mb-6 text-lg">
-                Please upload an image first to get prediction results.
-              </p>
-              <Button onClick={() => navigate("/")} size="lg" className="font-bold">
-                <ArrowLeft className="mr-2 h-5 w-5" />
-                Back to Home
-              </Button>
-            </CardContent>
-          </Card>
-        </BackgroundGradient>
-      </div>
-    );
-  }
-
-  const treatmentInfo = getTreatmentInfo(resultData.results);
-  const Icon = treatmentInfo.icon;
-
-  // Prepare context data for assistant
-  const assistantContext = resultData ? {
-    predicted_label: resultData.predicted_label,
-    confidence: resultData.confidence,
-    description: treatmentInfo.description,
-    recommendation: treatmentInfo.treatment.join(' ')
-  } : null;
-
-  return (
-    <div className="min-h-screen relative">
-      {/* Assistant Sidebar */}
-      <AssistantSidebar context={assistantContext} />
-      
-    <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
-      <div className="mb-10">
-        <Button 
-          onClick={() => navigate("/")} 
-          variant="ghost" 
-          size="lg" 
-          className="font-semibold hover:bg-[#C8E6C9]/20 transition-all"
-          aria-label="Go back to home page"
-        >
-          <ArrowLeft className="mr-2 h-5 w-5" />
-          Back to Home
-        </Button>
-      </div>
-
-      <div className="grid gap-10 lg:grid-cols-3">
-        {/* Main Result Card */}
-        <div className="lg:col-span-2 space-y-8">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-          >
-            <BackgroundGradient className="rounded-3xl">
-              <Card className="border-0 shadow-xl">
-                <CardHeader className="pb-6">
-                  <div className="flex items-start justify-between flex-wrap gap-6">
-                    <div className="flex items-center space-x-5">
-                      <div className={cn("p-5 rounded-2xl bg-gradient-to-br shadow-xl", treatmentInfo.bgColor)}>
-                        <Icon className={cn("h-10 w-10", treatmentInfo.color)} />
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Image Analysis */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <BackgroundGradient className="rounded-3xl">
+                <Card className="border-0 overflow-hidden bg-[#1B4D3E] text-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-[#E5C558]">
+                      <Scan className="h-5 w-5" />
+                      {t('result.analyzed_image')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    {result.imageUrl && (
+                      <div className="relative h-64 md:h-96 w-full bg-black/20">
+                        <img
+                          src={result.imageUrl}
+                          alt="Analyzed Leaf"
+                          className="w-full h-full object-contain"
+                        />
                       </div>
-                      <div>
-                        <CardTitle className="text-3xl md:text-4xl font-black mb-3">{resultData.predicted_label}</CardTitle>
-                        <CardDescription className="text-base md:text-lg">{treatmentInfo.description}</CardDescription>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-5xl md:text-6xl font-black bg-gradient-to-br from-primary to-primary/50 bg-clip-text text-transparent">
-                        {resultData.confidence}%
-                      </div>
-                      <div className="text-sm md:text-base text-black font-semibold mt-1">Confidence</div>
-                    </div>
-                  </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </BackgroundGradient>
+            </motion.div>
+
+            {/* Treatment Plan */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="border border-[#E5C558]/20 shadow-lg bg-[#1B4D3E] text-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-2xl text-[#E5C558]">
+                    <Activity className="h-6 w-6" />
+                    {t('result.treatment_plan')}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-8">
-                    <div className="h-4 bg-secondary rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${resultData.confidence}%` }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full shadow-glow"
-                      />
-                    </div>
-                  </div>
-
-                  <Separator className="my-10" />
-
-                  <div>
-                    <h3 className="text-xl md:text-2xl font-bold mb-8 flex items-center">
-                      <Activity className="h-6 w-6 mr-3 text-primary" />
-                      Probability Distribution
-                    </h3>
-                    <div className="space-y-5">
-                      {Object.entries(resultData.results)
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([disease, probability], index) => (
-                          <div key={index}>
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="text-base md:text-lg font-semibold text-foreground">{disease}</span>
-                              <span className="text-base md:text-lg font-bold text-primary">{probability}%</span>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-white">
+                        <CheckCircle className="h-5 w-5 text-[#E5C558]" />
+                        {t('result.treatment_steps')}
+                      </h3>
+                      <div className="grid gap-4">
+                        {info.steps.map((step, index) => (
+                          <div key={index} className="flex items-start gap-4 p-4 rounded-xl bg-[#0A1F1C]/50 border border-white/5 hover:border-[#E5C558]/30 transition-colors">
+                            <div className="h-8 w-8 rounded-full bg-[#E5C558] text-[#0A1F1C] flex items-center justify-center flex-shrink-0 font-bold">
+                              {index + 1}
                             </div>
-                            <div className="h-3 bg-secondary rounded-full overflow-hidden">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${probability}%` }}
-                                transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
-                                className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full"
-                              />
-                            </div>
+                            <p className="text-gray-200 mt-1">{step}</p>
                           </div>
                         ))}
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="mt-10 flex flex-col sm:flex-row gap-4">
-                    <Button 
-                      onClick={() => navigate("/")} 
-                      variant="outline" 
-                      size="lg" 
-                      className="flex-1 font-bold hover:bg-[#C8E6C9]/20 transition-all"
-                      aria-label="Start a new analysis"
-                    >
-                      <Leaf className="mr-2 h-5 w-5" />
-                      Scan Another Image
-                    </Button>
-                    <Button 
-                      onClick={downloadReport} 
-                      size="lg" 
-                      className="flex-1 font-bold bg-[#1B5E20] hover:bg-[#66BB6A] text-white hover:scale-105 active:scale-95 transition-all"
-                      aria-label="Download PDF report"
-                    >
-                      <Download className="mr-2 h-5 w-5" />
-                      Download Report (PDF)
-                    </Button>
+                    <div className="p-6 rounded-xl bg-blue-900/20 border border-blue-500/30">
+                      <h4 className="font-bold text-blue-400 mb-2 flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" />
+                        {t('result.pro_tip')}
+                      </h4>
+                      <p className="text-blue-200">
+                        {t('result.protip_isolate')}
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            </BackgroundGradient>
-          </motion.div>
+            </motion.div>
+          </div>
 
-          {/* Treatment Plan */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <BackgroundGradient className="rounded-3xl">
-              <Card className="border-0">
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-2xl md:text-3xl flex items-center">
-                    <TrendingUp className="mr-3 h-7 w-7 text-primary" />
-                    Recommended Treatment Plan
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="mb-8">
-                    <h4 className="font-bold text-xl md:text-2xl mb-4 text-foreground">{treatmentInfo.title}</h4>
-                    <p className="text-black text-base md:text-lg leading-relaxed">{treatmentInfo.description}</p>
-                  </div>
-                  <Separator className="my-8" />
-                  <div>
-                    <h5 className="font-bold mb-6 text-lg md:text-xl">Treatment Steps:</h5>
-                    <ul className="space-y-4">
-                      {treatmentInfo.treatment.map((step, index) => (
-                        <motion.li
-                          key={index}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.3 + index * 0.1 }}
-                          className="flex items-start"
-                        >
-                          <CheckCircle2 className="h-6 w-6 text-primary mr-4 mt-0.5 flex-shrink-0" />
-                          <span className="text-base md:text-lg text-foreground leading-relaxed">{step}</span>
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="mt-10 p-8 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl border-2 border-primary/20">
-                    <p className="text-base md:text-lg text-foreground leading-relaxed">
-                      <strong className="text-primary flex items-center gap-2 mb-3 text-lg">
-                        <Sparkles className="h-5 w-5" />
-                        Pro Tip:
-                      </strong>
-                      Always test treatments on a small area first and monitor your plant's response.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </BackgroundGradient>
-          </motion.div>
-        </div>
-
-        {/* Sidebar - Care Tips */}
-        <div className="space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <BackgroundGradient className="rounded-3xl">
-              <Card className="border-0">
-                <CardHeader className="pb-6">
-                  <CardTitle className="flex items-center text-xl md:text-2xl">
-                    <Leaf className="mr-3 h-7 w-7 text-primary" />
-                    Prevention & Care
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                  <div>
-                    <div className="flex items-center mb-4">
-                      <Droplets className="h-7 w-7 text-primary mr-3" />
-                      <h4 className="font-bold text-lg text-foreground">Watering</h4>
-                    </div>
-                    <p className="text-sm md:text-base text-black leading-relaxed">
-                      Water at soil level, avoid wetting leaves. Allow top inch of
-                      soil to dry between waterings.
-                    </p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <div className="flex items-center mb-4">
-                      <Sun className="h-7 w-7 text-primary mr-3" />
-                      <h4 className="font-bold text-lg text-foreground">Lighting</h4>
-                    </div>
-                    <p className="text-sm md:text-base text-black leading-relaxed">
-                      Provide bright, indirect sunlight. Avoid direct afternoon sun
-                      which can scorch leaves.
-                    </p>
-                  </div>
-                  <Separator />
-                  <div>
-                    <div className="flex items-center mb-4">
-                      <Wind className="h-7 w-7 text-primary mr-3" />
-                      <h4 className="font-bold text-lg text-foreground">Air Flow</h4>
-                    </div>
-                    <p className="text-sm md:text-base text-black leading-relaxed">
-                      Ensure good airflow around plants to prevent fungal diseases.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </BackgroundGradient>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <BackgroundGradient className="rounded-3xl">
-              <Card className="border-0">
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl md:text-2xl">Severity Level</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Badge
-                    variant={
-                      treatmentInfo.severity === "low"
-                        ? "default"
-                        : treatmentInfo.severity === "medium"
-                        ? "secondary"
-                        : "destructive"
-                    }
-                    className="text-lg md:text-xl px-8 py-4 font-bold w-full justify-center"
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Actions */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="border-0 shadow-lg bg-[#E5C558] text-[#0A1F1C]">
+                <CardContent className="p-6 space-y-4">
+                  <Button
+                    onClick={() => navigate('/')}
+                    className="w-full bg-[#0A1F1C] text-[#E5C558] hover:bg-[#0A1F1C]/90 font-bold h-12 border border-[#E5C558]"
                   >
-                    {treatmentInfo.severity === "low"
-                      ? "Low Risk"
-                      : treatmentInfo.severity === "medium"
-                      ? "Moderate Risk"
-                      : "High Risk"}
-                  </Badge>
+                    <Scan className="mr-2 h-5 w-5" />
+                    {t('result.scan_another')}
+                  </Button>
+                  <Button
+                    onClick={generatePDF}
+                    variant="outline"
+                    className="w-full border-[#0A1F1C]/20 text-[#0A1F1C] hover:bg-[#0A1F1C]/10 h-12"
+                  >
+                    <Download className="mr-2 h-5 w-5" />
+                    {t('result.download_report')}
+                  </Button>
                 </CardContent>
               </Card>
-            </BackgroundGradient>
-          </motion.div>
+            </motion.div>
+
+            {/* Prevention Stats */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="border border-[#E5C558]/20 shadow-lg bg-[#1B4D3E] text-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-[#E5C558]">
+                    <Shield className="h-5 w-5" />
+                    {t('result.prevention_care')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-full bg-blue-500/20 text-blue-400">
+                      <Droplets className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-400">{t('result.watering')}</div>
+                      <div className="font-medium text-white">{info.prevention.water}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-full bg-yellow-500/20 text-yellow-400">
+                      <Sun className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-400">{t('result.lighting')}</div>
+                      <div className="font-medium text-white">{info.prevention.sun}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-full bg-green-500/20 text-green-400">
+                      <Wind className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-400">{t('result.airflow')}</div>
+                      <div className="font-medium text-white">{info.prevention.air}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Severity Meter */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Card className="border border-[#E5C558]/20 shadow-lg bg-[#1B4D3E] text-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-[#E5C558]">
+                    <Thermometer className="h-5 w-5" />
+                    {t('result.severity')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-green-400 font-medium">{t('result.low_risk')}</span>
+                      <span className="text-red-400 font-medium">{t('result.high_risk')}</span>
+                    </div>
+                    <Progress
+                      value={
+                        info.risk === t('result.low_risk') ? 25 :
+                          info.risk === t('result.moderate_risk') ? 50 : 90
+                      }
+                      className={`h-4 bg-[#0A1F1C]`}
+                      indicatorClassName={
+                        info.risk === t('result.low_risk') ? 'bg-green-500' :
+                          info.risk === t('result.moderate_risk') ? 'bg-yellow-500' : 'bg-red-500'
+                      }
+                    />
+                    <p className="text-sm text-gray-400 text-center mt-2">
+                      Current condition assessment based on visual analysis
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

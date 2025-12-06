@@ -24,11 +24,7 @@
     "Healthy": "Healthy"
   },
   "metadata": {
-    "model_type": "MobileNetV2",
-    "image_size": 224,
-    "batch_size": 16,
-    "training_epochs": 4,
-    "final_accuracy": 0.7777777910232544,
-    "final_loss": 2.2257587909698486
+    "model_type": "DenseNet121_Local",
+    "accuracy": 0.9867498278617859
   }
 }

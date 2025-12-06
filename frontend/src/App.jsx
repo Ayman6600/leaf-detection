@@ -4,6 +4,7 @@ import MainLayout from "./components/MainLayout";
 import { Skeleton } from "./components/ui/skeleton";
 import { HistoryProvider } from "./contexts/HistoryContext";
 import { ToastProvider } from "./components/ui/toast";
+import LanguagePreferenceModal from "./components/LanguagePreferenceModal";
 
 // Lazy load pages to improve initial loading time
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -25,11 +26,17 @@ const LoadingFallback = () => (
 );
 
 function App() {
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = React.useState(false);
+
   return (
     <HistoryProvider>
       <ToastProvider>
         <BrowserRouter>
-          <MainLayout>
+          <LanguagePreferenceModal
+            isOpen={isLanguageModalOpen}
+            setIsOpen={setIsLanguageModalOpen}
+          />
+          <MainLayout onOpenLanguageModal={() => setIsLanguageModalOpen(true)}>
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
                 <Route path="/" element={<HomePage />} />

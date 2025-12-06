@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Bot, User, Loader2, ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
@@ -13,7 +14,7 @@ const AssistantSidebar = ({ context = null }) => {
     {
       id: '1',
       type: 'bot',
-      text: context 
+      text: context
         ? `Hello! I'm your Agriculture Assistant. I can see you've detected "${context.predicted_label}" with ${(context.confidence * 100).toFixed(1)}% confidence. How can I help you with treatment or care questions?`
         : "Hello! I'm your Agriculture Assistant. I can help you with questions about plant diseases, treatments, farming practices, and more. How can I assist you today?",
       timestamp: new Date().toISOString()
@@ -73,10 +74,10 @@ const AssistantSidebar = ({ context = null }) => {
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Assistant error:', error);
-      
+
       // Extract error message from response if available
       let errorMessage = 'I apologize, but I encountered an error. Please try again in a moment.';
-      
+
       if (error.message) {
         const errorLower = error.message.toLowerCase();
         if (errorLower.includes('quota') || errorLower.includes('rate limit') || errorLower.includes('429')) {
@@ -91,7 +92,7 @@ const AssistantSidebar = ({ context = null }) => {
       } else {
         toast.error('Failed to get response from assistant. Please try again.');
       }
-      
+
       const errorBotMessage = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
@@ -106,21 +107,21 @@ const AssistantSidebar = ({ context = null }) => {
 
   const suggestedQuestions = context
     ? [
-        `Tell me more about ${context.predicted_label}`,
-        "What are the best treatment options?",
-        "How can I prevent this disease?",
-        "What are the symptoms I should watch for?",
-      ]
+      `Tell me more about ${context.predicted_label}`,
+      "What are the best treatment options?",
+      "How can I prevent this disease?",
+      "What are the symptoms I should watch for?",
+    ]
     : [
-        "How do I prevent powdery mildew?",
-        "What are the best practices for plant care?",
-        "How often should I water my plants?",
-        "What causes leaf spots on plants?",
-      ];
+      "How do I prevent powdery mildew?",
+      "What are the best practices for plant care?",
+      "How often should I water my plants?",
+      "What causes leaf spots on plants?",
+    ];
 
   const handleSuggestionClick = async (question) => {
     if (loading) return;
-    
+
     const userMessage = {
       id: Date.now().toString(),
       type: 'user',
@@ -142,10 +143,10 @@ const AssistantSidebar = ({ context = null }) => {
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Assistant error:', error);
-      
+
       // Extract error message from response if available
       let errorMessage = 'I apologize, but I encountered an error. Please try again in a moment.';
-      
+
       if (error.message) {
         const errorLower = error.message.toLowerCase();
         if (errorLower.includes('quota') || errorLower.includes('rate limit') || errorLower.includes('429')) {
@@ -160,7 +161,7 @@ const AssistantSidebar = ({ context = null }) => {
       } else {
         toast.error('Failed to get response from assistant. Please try again.');
       }
-      
+
       const errorBotMessage = {
         id: (Date.now() + 1).toString(),
         type: 'bot',
@@ -173,7 +174,8 @@ const AssistantSidebar = ({ context = null }) => {
     }
   };
 
-  return (
+  // Use Portal to render outside of parent stacking contexts (e.g. Framer Motion)
+  return createPortal(
     <>
       {/* Toggle Button - Always visible */}
       {!isOpen && (
@@ -181,7 +183,7 @@ const AssistantSidebar = ({ context = null }) => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           onClick={() => setIsOpen(true)}
-          className="fixed right-4 top-1/2 -translate-y-1/2 z-40 bg-primary text-primary-foreground p-4 rounded-l-xl shadow-lg hover:bg-primary/90 transition-colors"
+          className="fixed right-4 top-1/2 -translate-y-1/2 z-[90] bg-primary text-primary-foreground p-4 rounded-l-xl shadow-lg hover:bg-primary/90 transition-colors"
           aria-label="Open AI Assistant"
         >
           <Bot className="h-6 w-6" />
@@ -196,7 +198,7 @@ const AssistantSidebar = ({ context = null }) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full md:w-[400px] z-50 bg-background border-l border-border shadow-2xl flex flex-col"
+            className="fixed right-0 top-0 h-full w-full md:w-[400px] z-[100] bg-background border-l border-border shadow-2xl flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border bg-card">
@@ -229,9 +231,8 @@ const AssistantSidebar = ({ context = null }) => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className={`flex gap-3 ${
-                      message.type === 'user' ? 'justify-end' : 'justify-start'
-                    }`}
+                    className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'
+                      }`}
                   >
                     {message.type === 'bot' && (
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -239,11 +240,10 @@ const AssistantSidebar = ({ context = null }) => {
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                        message.type === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-foreground'
-                      }`}
+                      className={`max-w-[80%] rounded-lg px-3 py-2 ${message.type === 'user'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-foreground'
+                        }`}
                     >
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">
                         {message.text}
@@ -263,7 +263,7 @@ const AssistantSidebar = ({ context = null }) => {
                   </motion.div>
                 ))}
               </AnimatePresence>
-              
+
               {loading && (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -328,9 +328,9 @@ const AssistantSidebar = ({ context = null }) => {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </>,
+    document.body
   );
 };
 
 export default AssistantSidebar;
-

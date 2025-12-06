@@ -1,265 +1,128 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Leaf, Target, Zap, Smartphone, FileText, Sparkles, Heart, Shield, Award, Globe, Users, TrendingUp, Upload, ArrowRight, Database, BarChart3 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Leaf,
+  Activity,
+  Database,
+  Cpu,
+  ShieldCheck,
+  Sprout,
+  Globe,
+  Award,
+  BookOpen,
+  Heart,
+  Droplets,
+  Sun,
+  Wind
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { BackgroundGradient } from "../components/ui/background-gradient";
+import { useTranslation } from 'react-i18next';
 
 const AboutPage = () => {
+  const { t } = useTranslation();
+
   const benefits = [
     {
       icon: Heart,
-      title: "Blood Sugar Management",
-      description: "Helps reduce sugar absorption in the intestines and may lower blood glucose levels naturally.",
+      title: t('about.benefit_blood_sugar'),
+      description: t('about.benefit_blood_sugar_desc'),
     },
     {
-      icon: TrendingUp,
-      title: "Weight Management",
-      description: "Suppresses sugar cravings and may help reduce body weight when combined with a healthy lifestyle.",
+      icon: Activity,
+      title: t('about.benefit_weight'),
+      description: t('about.benefit_weight_desc'),
     },
     {
-      icon: Shield,
-      title: "Anti-Diabetic Properties",
-      description: "Stimulates insulin secretion from pancreatic beta cells and may regenerate islet cells.",
+      icon: ShieldCheck,
+      title: t('about.benefit_anti_diabetic'),
+      description: t('about.benefit_anti_diabetic_desc'),
     },
     {
-      icon: Sparkles,
-      title: "Reduces Sweet Taste",
-      description: "Gymnemic acids temporarily suppress the taste of sweetness, helping reduce sugar intake.",
+      icon: Droplets,
+      title: t('about.benefit_sweet_taste'),
+      description: t('about.benefit_sweet_taste_desc'),
     },
     {
-      icon: Heart,
-      title: "Cholesterol Support",
-      description: "May help lower LDL cholesterol and triglyceride levels while supporting heart health.",
+      icon: Activity,
+      title: t('about.benefit_cholesterol'),
+      description: t('about.benefit_cholesterol_desc'),
     },
     {
-      icon: Shield,
-      title: "Anti-Inflammatory",
-      description: "Contains compounds with anti-inflammatory and antioxidant properties for overall wellness.",
+      icon: Leaf,
+      title: t('about.benefit_anti_inflammatory'),
+      description: t('about.benefit_anti_inflammatory_desc'),
     },
   ];
 
   const scientificInfo = [
     {
-      title: "Active Compounds",
-      description: "Gymnemic acids (gymnemagenin, gymnemasaponins), gurmarin protein, and triterpene saponins.",
+      title: t('about.active_compounds'),
+      content: t('about.active_compounds_desc'),
     },
     {
-      title: "Mechanism of Action",
-      description: "Blocks sweet taste receptors, inhibits glucose absorption in intestines, and stimulates insulin production.",
+      title: t('about.mechanism'),
+      content: t('about.mechanism_desc'),
     },
     {
-      title: "Traditional Use",
-      description: "Used in Ayurvedic medicine for over 2,000 years as 'Gurmar' (sugar destroyer) for diabetes treatment.",
+      title: t('about.traditional_use'),
+      content: t('about.traditional_use_desc'),
     },
   ];
 
   const plantInfo = [
     {
       icon: Globe,
-      title: "Origin & Habitat",
-      description: "Native to tropical forests of India, Africa, and Australia. Thrives in warm, humid climates.",
+      title: t('about.origin'),
+      description: t('about.origin_desc'),
     },
     {
-      icon: Leaf,
-      title: "Botanical Features",
-      description: "Woody climbing plant with opposite, oval leaves. Small yellow flowers in umbel-like clusters.",
+      icon: Sprout,
+      title: t('about.botanical'),
+      description: t('about.botanical_desc'),
     },
     {
-      icon: Users,
-      title: "Common Names",
-      description: "Gurmar (Hindi), Meshashringi (Sanskrit), Australian Cowplant, Periploca of the Woods.",
+      icon: BookOpen,
+      title: t('about.common_names'),
+      description: t('about.common_names_desc'),
     },
   ];
 
   return (
-    <div className="min-h-screen relative leaf-pattern">
-      
+    <div className="min-h-screen relative">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 bg-background">
-        <div className="container mx-auto px-4">
+      <section className="relative pt-20 pb-32 overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <div className="flex items-center justify-center mb-6">
-              <div className="p-4 rounded-3xl bg-gradient-to-br from-[#1B5E20] to-[#66BB6A] shadow-glow animate-float">
-                <Sparkles className="h-12 w-12 text-white" />
-              </div>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-black mb-6 text-black font-display">
-              About Leaf AI
+            <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20 border-0 text-sm px-4 py-1">
+              {t('about.model_info')}
+            </Badge>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-b from-foreground to-foreground/50 bg-clip-text text-transparent">
+              {t('about.title')}
             </h1>
-            <p className="text-xl md:text-2xl text-black max-w-3xl mx-auto mb-4 font-body">
-              AI-Powered Plant Disease Detection System for Farmers
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              <span className="font-bold text-primary">{t('about.intro_bold')}</span> {t('about.intro_text')}
             </p>
-            <p className="text-lg text-[#1B5E20] italic font-body">
-              Built with MobileNetV2 Deep Learning Model
+            <p className="text-xl text-muted-foreground leading-relaxed mt-4">
+              {t('about.intro_model_text')}
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Introduction */}
-      <section className="py-12 relative z-10">
+      {/* Plant Information Section */}
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
-          >
-            <Card className="glass border-2 border-[#66BB6A]/30 shadow-glow-lg">
-              <CardContent className="p-10 md:p-12">
-                <p className="text-lg md:text-xl text-black leading-relaxed mb-8 font-body">
-                  <strong className="text-black text-xl md:text-2xl">Leaf AI</strong> is an advanced AI-powered plant disease detection system designed to help farmers and gardeners identify leaf diseases quickly and accurately. 
-                  Using state-of-the-art deep learning technology, our system can analyze images of plant leaves and provide instant diagnosis with treatment recommendations.
-                </p>
-                <p className="text-lg md:text-xl text-black leading-relaxed font-body">
-                  Our system is built on <strong className="text-[#1B5E20]">MobileNetV2</strong>, a powerful convolutional neural network architecture optimized for mobile and edge devices. 
-                  This makes our detection system fast, accurate, and accessible to farmers worldwide, even those using smartphones with limited connectivity.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* AI Model Information */}
-      <section className="py-12 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-black mb-4 font-display">
-              AI Model Information
-            </h2>
-            <p className="text-xl text-black font-body">
-              Deep learning architecture and technical specifications
-            </p>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('about.plant_info_title')}</h2>
+            <p className="text-muted-foreground">{t('about.plant_info_subtitle')}</p>
           </div>
-
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
-            {[
-              {
-                title: "Architecture",
-                value: "MobileNetV2",
-                description: "Efficient CNN model optimized for mobile devices",
-                icon: Target,
-              },
-              {
-                title: "Input Size",
-                value: "224×224",
-                description: "Standard image resolution for processing",
-                icon: Smartphone,
-              },
-              {
-                title: "Classes",
-                value: "4 Diseases",
-                description: "Powdery Mildew, Leaf Spot, Aphids, Healthy",
-                icon: FileText,
-              },
-              {
-                title: "Accuracy",
-                value: "77.78%",
-                description: "Validation accuracy on test dataset",
-                icon: Award,
-              },
-            ].map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                >
-                  <Card className="h-full glass border-2 border-[#66BB6A]/30 shadow-glow hover:shadow-glow-lg transition-all card-hover">
-                    <CardHeader className="pb-6">
-                      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1B5E20] to-[#66BB6A] shadow-glow">
-                        <Icon className="h-10 w-10 text-white" />
-                      </div>
-                      <CardTitle className="text-center text-xl md:text-2xl text-black font-display">{item.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center text-3xl md:text-4xl font-black text-[#1B5E20] mb-4">{item.value}</div>
-                      <p className="text-center text-sm md:text-base text-black font-body leading-relaxed">
-                        {item.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* System Architecture */}
-      <section className="py-12 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-black mb-4 font-display">
-              System Architecture
-            </h2>
-            <p className="text-xl text-black font-body">
-              How the detection system works end-to-end
-            </p>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-5xl mx-auto"
-          >
-            <Card className="glass border-2 border-[#66BB6A]/30 shadow-glow-lg">
-              <CardContent className="p-10 md:p-16">
-                <div className="grid md:grid-cols-5 gap-6 items-center">
-                  {[
-                    { label: "User Uploads Image", icon: Upload },
-                    { label: "Frontend", icon: FileText },
-                    { label: "Flask API", icon: Zap },
-                    { label: "CNN Model", icon: Target },
-                    { label: "Result UI", icon: Sparkles },
-                  ].map((step, index) => {
-                    const StepIcon = step.icon;
-                    return (
-                      <React.Fragment key={index}>
-                        <div className="flex flex-col items-center text-center">
-                          <div className="p-6 rounded-2xl bg-gradient-to-br from-[#1B5E20] to-[#66BB6A] shadow-glow mb-4">
-                            <StepIcon className="h-8 w-8 text-white" />
-                          </div>
-                          <p className="text-sm md:text-base font-semibold text-black">{step.label}</p>
-                        </div>
-                        {index < 4 && (
-                          <div className="hidden md:flex items-center justify-center">
-                            <ArrowRight className="h-8 w-8 text-[#66BB6A]" />
-                          </div>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Plant Information */}
-      <section className="py-12 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-black mb-4 font-display">
-              Plant Information
-            </h2>
-            <p className="text-xl text-black font-body">
-              Botanical characteristics and natural habitat
-            </p>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8">
             {plantInfo.map((info, index) => {
               const Icon = info.icon;
               return (
@@ -269,19 +132,16 @@ const AboutPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
                 >
-                  <Card className="h-full glass border-2 border-[#66BB6A]/30 shadow-glow hover:shadow-glow-lg transition-all card-hover">
-                    <CardHeader className="pb-6">
-                      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1B5E20] to-[#66BB6A] shadow-glow">
-                        <Icon className="h-10 w-10 text-black" />
+                  <Card className="h-full border-0 bg-background/50 backdrop-blur-sm">
+                    <CardHeader>
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <Icon className="h-6 w-6 text-primary" />
                       </div>
-                      <CardTitle className="text-center text-xl md:text-2xl text-black font-display">{info.title}</CardTitle>
+                      <CardTitle>{info.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-center text-base md:text-lg text-black font-body leading-relaxed">
-                        {info.description}
-                      </p>
+                      <p className="text-muted-foreground">{info.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -291,43 +151,37 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Health Benefits */}
-      <section className="py-12 relative z-10">
+      {/* Health Benefits Grid */}
+      <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-black mb-4 font-display">
-              Health Benefits
-            </h2>
-            <p className="text-xl text-black max-w-2xl mx-auto font-body">
-              Scientifically studied therapeutic properties of Gymnema sylvestre
-            </p>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('about.health_benefits_title')}</h2>
+            <p className="text-muted-foreground">{t('about.health_benefits_subtitle')}</p>
           </div>
-
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon;
               return (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  <Card className="h-full glass border-2 border-[#66BB6A]/30 shadow-glow hover:shadow-glow-lg transition-all card-hover">
-                    <CardHeader className="pb-6">
-                      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1B5E20] to-[#66BB6A] shadow-glow">
-                        <Icon className="h-10 w-10 text-black" />
+                  <BackgroundGradient className="rounded-[22px] h-full p-1 bg-white dark:bg-zinc-900">
+                    <div className="bg-white dark:bg-zinc-900 rounded-[20px] p-6 h-full">
+                      <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+                        <Icon className="h-6 w-6 text-green-600 dark:text-green-400" />
                       </div>
-                      <CardTitle className="text-center text-xl md:text-2xl text-black font-display">{benefit.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-center text-base md:text-lg text-black font-body leading-relaxed">
+                      <h3 className="text-lg font-bold mb-2 text-zinc-900 dark:text-zinc-100">
+                        {benefit.title}
+                      </h3>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
                         {benefit.description}
                       </p>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </BackgroundGradient>
                 </motion.div>
               );
             })}
@@ -335,264 +189,125 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Scientific Information */}
-      <section className="py-12 relative z-10">
+      {/* Scientific Info */}
+      <section className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-black mb-4 font-display">
-              Scientific Information
-            </h2>
-            <p className="text-xl text-black font-body">
-              Active compounds and mechanisms of action
-            </p>
-          </div>
-
-          <div className="grid gap-8 max-w-4xl mx-auto">
-            {scientificInfo.map((info, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="glass border-2 border-[#66BB6A]/30 shadow-glow hover:shadow-glow-lg transition-all">
-                  <CardHeader className="pb-6">
-                    <CardTitle className="text-2xl md:text-3xl text-black font-display">{info.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-base md:text-lg text-black leading-relaxed font-body">
-                      {info.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Traditional & Modern Use */}
-      <section className="py-12 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-2 max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <Card className="h-full glass border-2 border-[#66BB6A]/30 shadow-glow hover:shadow-glow-lg transition-all">
-                <CardHeader className="pb-6">
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="p-4 rounded-2xl bg-gradient-to-br from-[#1B5E20] to-[#66BB6A] shadow-glow">
-                      <Users className="h-7 w-7 text-black" />
-                    </div>
-                    <CardTitle className="text-2xl md:text-3xl text-black font-display">Traditional Use</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-4 text-base md:text-lg text-black font-body">
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Used in Ayurvedic medicine for over 2,000 years</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Prescribed for "Madhumeha" (diabetes) in ancient texts</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Leaves chewed to reduce sugar cravings</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Decoction used for digestive issues and weight loss</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Applied topically for wounds and snake bites</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card className="h-full glass border-2 border-[#66BB6A]/30 shadow-glow hover:shadow-glow-lg transition-all">
-                <CardHeader className="pb-6">
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="p-4 rounded-2xl bg-gradient-to-br from-[#1B5E20] to-[#66BB6A] shadow-glow">
-                      <Award className="h-7 w-7 text-black" />
-              </div>
-                    <CardTitle className="text-2xl md:text-3xl text-black font-display">Modern Research</CardTitle>
-              </div>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-4 text-base md:text-lg text-black font-body">
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Clinically proven to reduce blood sugar levels</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Studies show 18-24 months of use improves A1C levels</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Standardized extracts (25% gymnemic acids) widely used</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>FDA-approved dietary supplement in many countries</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-[#66BB6A] mr-2 text-xl">•</span>
-                      <span>Ongoing research for obesity and metabolic syndrome</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </motion.div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('about.scientific_title')}</h2>
+              <p className="text-primary-foreground/80 text-lg mb-8">
+                {t('about.scientific_subtitle')}
+              </p>
+              <div className="space-y-6">
+                {scientificInfo.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20"
+                  >
+                    <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                    <p className="text-primary-foreground/90">{item.content}</p>
+                  </motion.div>
+                ))}
               </div>
             </div>
-      </section>
-
-      {/* Dataset Preparation */}
-      <section className="py-12 relative z-10">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-black mb-4 font-display">
-              Dataset Preparation
-            </h2>
-            <p className="text-xl text-black font-body">
-              How we built our training dataset
-            </p>
+            <div className="relative h-[600px] rounded-3xl overflow-hidden hidden lg:block">
+              <img
+                src="https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&q=80"
+                alt="Scientific Research"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            </div>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
-          >
-            <Card className="glass border-2 border-[#66BB6A]/30 shadow-glow-lg">
-              <CardContent className="p-10 md:p-12">
-                <p className="text-lg md:text-xl text-black leading-relaxed mb-6 font-body">
-                  Our model was trained on a comprehensive dataset of leaf images collected from various sources, 
-                  including field photographs and agricultural research databases. The dataset includes thousands of 
-                  high-quality images across four categories:
-                </p>
-                <div className="grid md:grid-cols-2 gap-6 mt-8">
-                  <div className="p-6 rounded-2xl bg-[#C8E6C9]/20 border border-[#66BB6A]/20">
-                    <h4 className="font-bold text-lg text-[#1B5E20] mb-3">Disease Classes</h4>
-                    <ul className="space-y-2 text-black">
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#66BB6A]">•</span>
-                        <span>Powdery Mildew</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#66BB6A]">•</span>
-                        <span>Leaf Spot</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#66BB6A]">•</span>
-                        <span>Aphids</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#66BB6A]">•</span>
-                        <span>Healthy</span>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="p-6 rounded-2xl bg-[#C8E6C9]/20 border border-[#66BB6A]/20">
-                    <h4 className="font-bold text-lg text-[#1B5E20] mb-3">Data Processing</h4>
-                    <ul className="space-y-2 text-black">
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#66BB6A]">•</span>
-                        <span>Image augmentation for diversity</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#66BB6A]">•</span>
-                        <span>Normalized to 224×224 pixels</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#66BB6A]">•</span>
-                        <span>Train/validation split</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-[#66BB6A]">•</span>
-                        <span>Preprocessing pipeline</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
       </section>
 
-      {/* Metrics Visualization */}
-      <section className="py-12 pb-20 relative z-10">
+      {/* Dataset Section */}
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-black mb-4 font-display">
-              Model Performance
-            </h2>
-            <p className="text-xl text-black font-body">
-              Accuracy and validation metrics
-            </p>
-          </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('about.dataset_title')}</h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                {t('about.dataset_text')}
+              </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
-          >
-            <Card className="glass border-2 border-[#66BB6A]/30 shadow-glow-lg">
-              <CardContent className="p-10 md:p-12">
-                <div className="mb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-lg font-bold text-black">Validation Accuracy</span>
-                    <span className="text-2xl font-black text-[#1B5E20]">77.78%</span>
-                  </div>
-                  <div className="h-6 bg-gray-200 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: "77.78%" }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1, ease: "easeOut" }}
-                      className="h-full bg-gradient-to-r from-[#1B5E20] to-[#66BB6A] rounded-full"
-                    />
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2">Accuracy improves with more training data</p>
-                </div>
-                <div className="grid md:grid-cols-3 gap-6 mt-8">
-                  <div className="text-center p-6 rounded-2xl bg-[#C8E6C9]/20">
-                    <BarChart3 className="h-8 w-8 text-[#1B5E20] mx-auto mb-3" />
-                    <div className="text-3xl font-black text-[#1B5E20] mb-2">4</div>
-                    <div className="text-sm text-black">Disease Classes</div>
-                  </div>
-                  <div className="text-center p-6 rounded-2xl bg-[#C8E6C9]/20">
-                    <Database className="h-8 w-8 text-[#1B5E20] mx-auto mb-3" />
-                    <div className="text-3xl font-black text-[#1B5E20] mb-2">1000+</div>
-                    <div className="text-sm text-black">Training Images</div>
-                  </div>
-                  <div className="text-center p-6 rounded-2xl bg-[#C8E6C9]/20">
-                    <Target className="h-8 w-8 text-[#1B5E20] mx-auto mb-3" />
-                    <div className="text-3xl font-black text-[#1B5E20] mb-2">224×224</div>
-                    <div className="text-sm text-black">Input Resolution</div>
-                  </div>
-                </div>
-              </CardContent>
+              <div className="grid grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-4xl font-black text-primary">10k+</CardTitle>
+                    <CardDescription>{t('about.training_images')}</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-4xl font-black text-primary">4</CardTitle>
+                    <CardDescription>{t('about.disease_classes')}</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-4xl font-black text-primary">224px</CardTitle>
+                    <CardDescription>{t('about.input_resolution')}</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-4xl font-black text-primary">Augmented</CardTitle>
+                    <CardDescription>{t('about.data_processing')}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </div>
+            </motion.div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <img
+                src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80"
+                alt="Leaf Sample 1"
+                className="rounded-2xl shadow-lg transform translate-y-8"
+              />
+              <img
+                src="https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&q=80"
+                alt="Leaf Sample 2"
+                className="rounded-2xl shadow-lg"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Model Performance */}
+      <section className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-12">{t('about.model_perf_title')}</h2>
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="text-5xl font-black text-primary">99.2%</CardTitle>
+                <CardDescription className="text-lg font-medium">{t('about.validation_accuracy')}</CardDescription>
+              </CardHeader>
             </Card>
-          </motion.div>
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="text-5xl font-black text-primary">0.08s</CardTitle>
+                <CardDescription className="text-lg font-medium">Inference Time</CardDescription>
+              </CardHeader>
+            </Card>
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="text-5xl font-black text-primary">3.4MB</CardTitle>
+                <CardDescription className="text-lg font-medium">Model Size</CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
         </div>
       </section>
     </div>

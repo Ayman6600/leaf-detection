@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Clock, 
-  Search, 
-  Filter, 
-  Trash2, 
-  Eye, 
+import {
+  Clock,
+  Search,
+  Filter,
+  Trash2,
+  Eye,
   Calendar,
   TrendingUp,
   X
@@ -18,8 +18,10 @@ import { Badge } from '../components/ui/badge';
 import { useHistory } from '../contexts/HistoryContext';
 import { useToast } from '../components/ui/toast';
 import { BackgroundGradient } from '../components/ui/background-gradient';
+import { useTranslation } from 'react-i18next';
 
 const HistoryPage = () => {
+  const { t } = useTranslation();
   const { history, removeFromHistory, clearHistory } = useHistory();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDisease, setFilterDisease] = useState('all');
@@ -33,7 +35,7 @@ const HistoryPage = () => {
 
   const filteredHistory = useMemo(() => {
     return history.filter(item => {
-      const matchesSearch = searchQuery === '' || 
+      const matchesSearch = searchQuery === '' ||
         item.predictedLabel.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesFilter = filterDisease === 'all' || item.predictedLabel === filterDisease;
       return matchesSearch && matchesFilter;
@@ -86,10 +88,10 @@ const HistoryPage = () => {
           >
             <div>
               <h1 className="text-5xl md:text-6xl font-black text-black mb-4 font-display">
-                Analysis History
+                {t('history.title')}
               </h1>
               <p className="text-lg text-gray-600">
-                View and manage your past plant disease analyses
+                {t('history.subtitle')}
               </p>
             </div>
             {history.length > 0 && (
@@ -100,7 +102,7 @@ const HistoryPage = () => {
                 aria-label="Clear all analysis history"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Clear All
+                {t('history.clear_all')}
               </Button>
             )}
           </motion.div>
@@ -122,7 +124,7 @@ const HistoryPage = () => {
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
                         type="text"
-                        placeholder="Search by disease name..."
+                        placeholder={t('history.search_placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-10 h-12"
@@ -146,7 +148,7 @@ const HistoryPage = () => {
                         className="w-full h-12 pl-10 pr-4 rounded-md border border-gray-300 bg-white text-black focus:outline-none focus:ring-2 focus:ring-[#1B5E20]"
                         aria-label="Filter by disease type"
                       >
-                        <option value="all">All Diseases</option>
+                        <option value="all">{t('history.filter_all')}</option>
                         {diseases.map(disease => (
                           <option key={disease} value={disease}>{disease}</option>
                         ))}
@@ -170,9 +172,9 @@ const HistoryPage = () => {
               <div className="mb-6 inline-flex p-6 bg-gray-100 rounded-full">
                 <Clock className="h-16 w-16 text-gray-400" />
               </div>
-              <h2 className="text-3xl font-bold text-black mb-4">No History Yet</h2>
+              <h2 className="text-3xl font-bold text-black mb-4">{t('history.no_history')}</h2>
               <p className="text-gray-600 mb-8">
-                Your plant disease analysis history will appear here once you start analyzing images.
+                {t('history.no_history_text')}
               </p>
               <Button
                 onClick={() => navigate('/')}
@@ -180,7 +182,7 @@ const HistoryPage = () => {
                 className="bg-[#1B5E20] hover:bg-[#66BB6A] text-white"
                 aria-label="Go to home page to start analyzing a plant leaf"
               >
-                Start Analyzing
+                {t('history.start_analyzing')}
               </Button>
             </div>
           </motion.div>
@@ -190,7 +192,7 @@ const HistoryPage = () => {
             animate={{ opacity: 1 }}
             className="text-center py-20"
           >
-            <p className="text-lg text-gray-600">No results found matching your search.</p>
+            <p className="text-lg text-gray-600">{t('history.no_results')}</p>
           </motion.div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -202,7 +204,7 @@ const HistoryPage = () => {
                 transition={{ delay: index * 0.05 }}
               >
                 <BackgroundGradient className="rounded-3xl h-full">
-                  <Card 
+                  <Card
                     className="border-0 h-full cursor-pointer hover:shadow-lg transition-shadow"
                     onClick={() => handleViewResult(item)}
                     role="button"
@@ -247,7 +249,7 @@ const HistoryPage = () => {
                     <CardContent>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-semibold text-gray-600">Confidence</span>
+                          <span className="text-sm font-semibold text-gray-600">{t('history.confidence')}</span>
                           <Badge className="bg-[#1B5E20] text-white font-bold">
                             {item.confidence}%
                           </Badge>
@@ -268,7 +270,7 @@ const HistoryPage = () => {
                           }}
                         >
                           <Eye className="h-4 w-4 mr-2" />
-                          View Details
+                          {t('history.view_details')}
                         </Button>
                       </div>
                     </CardContent>
@@ -295,21 +297,21 @@ const HistoryPage = () => {
                       <div className="text-4xl font-black text-black mb-2">
                         {history.length}
                       </div>
-                      <div className="text-sm text-gray-600">Total Analyses</div>
+                      <div className="text-sm text-gray-600">{t('history.total_analyses')}</div>
                     </div>
                     <div>
                       <div className="text-4xl font-black text-black mb-2">
                         {diseases.length}
                       </div>
-                      <div className="text-sm text-gray-600">Diseases Detected</div>
+                      <div className="text-sm text-gray-600">{t('history.diseases_detected')}</div>
                     </div>
                     <div>
                       <div className="text-4xl font-black text-black mb-2">
-                        {history.length > 0 
+                        {history.length > 0
                           ? Math.round(history.reduce((acc, item) => acc + item.confidence, 0) / history.length)
                           : 0}%
                       </div>
-                      <div className="text-sm text-gray-600">Avg Confidence</div>
+                      <div className="text-sm text-gray-600">{t('history.avg_confidence')}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -323,4 +325,3 @@ const HistoryPage = () => {
 };
 
 export default HistoryPage;
-
