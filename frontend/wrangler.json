@@ -1,11 +1,5 @@
 {
-    "name": "leaf-detection",
-    "compatibility_date": "2025-12-06",
-    "main": "src/index.ts",
-    "build": {
-        "command": "npm run build"
-    },
-    "assets": {
-        "directory": "./dist"
-    }
+  "name": "leaf-detection",
+  "compatibility_date": "2025-12-06",
+  "main": "src/index.ts"
 }
