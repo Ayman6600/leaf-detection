@@ -1,7 +1,20 @@
 // API service to handle communication with the backend
-const API_BASE_URL = import.meta.env.PROD
-  ? import.meta.env.VITE_API_URL || "http://localhost:5004" // Use VITE_API_URL in production or fallback
-  : "http://localhost:5004"; // Flask server API endpoint
+const getApiBaseUrl = () => {
+  if (import.meta.env.PROD) {
+    const url = import.meta.env.VITE_API_URL;
+    if (!url) {
+      console.warn("VITE_API_URL is not set! API calls will fail. Please set this to your Backend URL (e.g., Render.com URL).");
+      return "http://localhost:5004"; // Fallback that will likely fail with Connection Refused
+    }
+    if (url.includes(window.location.hostname)) {
+      console.error("CRITICAL CONFIG ERROR: VITE_API_URL is set to the Frontend URL. It MUST point to the Python Backend.");
+    }
+    return url;
+  }
+  return "http://localhost:5004";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const uploadImage = async (file) => {
   const formData = new FormData();
