@@ -21,8 +21,7 @@ export const uploadImage = async (file) => {
   formData.append("file", file);
 
   try {
-    const response = await fetch(`${API_BASE_URL}/predict`, {
-      method: "POST",
+    const response = await fetch(`${API_BASE_URL}/api/predict`, {      method: "POST",
       body: formData,
     });
 
