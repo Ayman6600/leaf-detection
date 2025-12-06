@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "workspaces": [
+        "frontend"
+    ],
+    "scripts": {
+        "build": "npm install && npm run build --workspace=leaf-disease-react && cp -r frontend/dist dist"
+    }
+}
